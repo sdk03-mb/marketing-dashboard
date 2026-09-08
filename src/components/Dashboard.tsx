@@ -1,254 +1,184 @@
 "use client";
-import { motion } from "framer-motion";
-import { TopBar } from "./TopBar";
-import { Sparkline } from "./Sparkline";
-import { TrendChart } from "./TrendChart";
-import { alerts, campaigns, channels, funnel, kpis, period, regions, topKeywords } from "@/lib/data";
-import { compact, fmt, money, pct } from "@/lib/format";
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 6 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
-};
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import {
+  chanData, hasLive, hasSnapshot, iso, loadPeriod, makeCal, monthPeriods, periodFor, planFor, syntheticAgg,
+  type Agg, type Cal, type Hist, type MonthData, type Period,
+} from "@/lib/engine";
+import { ALLCH, CHANNEL_NAMES, COUNTRIES } from "@/lib/plan";
+import { ChannelPicker } from "./ChannelPicker";
+import { Flag } from "./Flag";
+import { Logo } from "./Logo";
+import { PANEL, POP, Pill } from "./motion";
+import { Overview } from "./Overview";
+import { PerfGrid } from "./PerfGrid";
+import { Recs } from "./Recs";
+import { Select } from "./Select";
 
-function Delta({ v, goodWhen }: { v: number; goodWhen: "up" | "down" }) {
-  const good = goodWhen === "up" ? v >= 0 : v <= 0;
-  return (
-    <span className={`num text-[11px] ${good ? "text-up" : "text-down"}`}>
-      {v > 0 ? "+" : ""}{v.toFixed(1)}%
-    </span>
-  );
-}
+type Tab = "kpi" | "perf" | "recs";
+const TABS: [Tab, string][] = [["kpi", "Overview"], ["perf", "Performance"], ["recs", "Recommendations"]];
+type Ctx = { agg: Agg; p: Period; hist: Hist; months: MonthData[] };
 
-function Panel({ title, meta, children, className = "" }: { title: string; meta?: string; children: React.ReactNode; className?: string }) {
-  return (
-    <motion.section variants={item} className={`panel flex flex-col min-h-0 ${className}`}>
-      <header className="flex items-baseline justify-between px-2.5 pt-2 pb-1">
-        <h2 className="text-[12px] font-semibold">{title}</h2>
-        {meta && <span className="text-[10px] text-muted">{meta}</span>}
-      </header>
-      <div className="px-1.5 pb-1.5 min-h-0 overflow-auto">{children}</div>
-    </motion.section>
-  );
-}
-
-const statusDot: Record<string, string> = {
-  live: "bg-up",
-  learning: "bg-warn",
-  paused: "bg-muted",
+const KEY_PERIOD = "mkt_period3", KEY_CHAN = "mkt_chan3", KEY_TAB = "mkt_tab4", KEY_COUNTRIES = "mkt_countries4";
+const CHAN_OPTIONS = [ALLCH, ...CHANNEL_NAMES];
+const PICKABLE: string[] = [...COUNTRIES, "Other"];
+const ls = {
+  get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } },
 };
 
 export function Dashboard() {
-  const totalSpend = channels.reduce((a, c) => a + c.spend, 0);
-  const totalFtd = channels.reduce((a, c) => a + c.ftd, 0);
+  // Rendered client-only (see page.tsx), so dates and saved preferences can be read on first render.
+  const [cal] = useState<Cal>(() => makeCal());
+  const [range, setRange] = useState(() => {
+    const p = cal.periods.find((x) => x.id === ls.get(KEY_PERIOD)) ?? cal.periods[0];
+    return { from: iso(p.from), to: iso(p.to) };
+  });
+  const [chan, setChan] = useState(() => { const v = ls.get(KEY_CHAN); return v && CHAN_OPTIONS.includes(v) ? v : "PPC / Google Search"; });
+  // Always open on Performance; the tab choice is not remembered between visits.
+  const [tab, setTab] = useState<Tab>("perf");
+  const [enabled, setEnabled] = useState<Set<string>>(() => {
+    try { const v = JSON.parse(ls.get(KEY_COUNTRIES) || "null"); return new Set<string>(Array.isArray(v) ? v : COUNTRIES); }
+    catch { return new Set<string>(COUNTRIES); }
+  });
+  const [pickOpen, setPickOpen] = useState(false);
+  const [ctx, setCtx] = useState<Ctx | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const cache = useRef<Record<string, Agg>>({});
+
+  const period = useMemo(() => periodFor(cal, range.from, range.to), [cal, range]);
+
+  useEffect(() => {
+    let live = true;
+    if (!period.id.startsWith("c_")) ls.set(KEY_PERIOD, period.id);
+    const prev = cal.periods.find((x) => x.id === "prev")!, mtd = cal.periods.find((x) => x.id === "mtd")!;
+    const c = cache.current;
+    const quick = (m: Period): Promise<Agg | null> =>
+      hasSnapshot(m.id) || c[m.id] ? loadPeriod(m, c) : hasLive() ? loadPeriod(m, c).catch(() => null) : Promise.resolve(null);
+    (async () => {
+      const [agg, prevA, mtdA] = await Promise.all([loadPeriod(period, c), loadPeriod(prev, c), loadPeriod(mtd, c)]);
+      // 12 months: snapshot or live where available, otherwise an illustrative placeholder (flagged).
+      const mp = monthPeriods(cal, 12);
+      const ms = await Promise.all(mp.map(quick));
+      // Placeholder months follow the latest real month's spend as a share of plan.
+      const realSpend = Object.values(chanData(prevA, ALLCH)).reduce((s, b) => s + b.Spend, 0);
+      const planSpend = COUNTRIES.reduce((s, c) => s + planFor(ALLCH, c, prev.pace).Spend, 0);
+      const level = planSpend > 0 ? Math.min(Math.max(realSpend / planSpend, 0.1), 1.5) : 1;
+      const months: MonthData[] = mp.map((m, i) => (ms[i]
+        ? { ...m, agg: ms[i]!, missing: false }
+        : { ...m, agg: syntheticAgg(m, level), missing: true, illustrative: true }));
+      if (!live) return;
+      setErr(null);
+      setCtx({ agg, p: period, hist: { prev: prevA, mtd: mtdA }, months });
+    })().catch((e: unknown) => {
+      if (!live) return;
+      const msg = e instanceof Error ? e.message : String(e);
+      setErr(period.id.startsWith("c_")
+        ? "This range needs the live Power BI connection. The snapshot covers yesterday, last 7 days, this month and last month (use Quick range)."
+        : "Power BI query failed: " + msg);
+    });
+    return () => { live = false; };
+  }, [cal, period]);
+
+  // Close the country picker on outside click.
+  useEffect(() => {
+    if (!pickOpen) return;
+    const close = () => setPickOpen(false);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [pickOpen]);
+
+  const pickChan = useCallback((v: string) => { setChan(v); ls.set(KEY_CHAN, v); }, []);
+  const pickTab = useCallback((v: Tab) => { setTab(v); ls.set(KEY_TAB, v); }, []);
+  const pickQuick = (id: string) => { const p = cal.periods.find((x) => x.id === id); if (p) setRange({ from: iso(p.from), to: iso(p.to) }); };
+  const onDate = (k: "from" | "to") => (v: string) => {
+    const next = { ...range, [k]: v };
+    if (next.from && next.to && next.from <= next.to) setRange(next);
+  };
+  const setCountries = (next: Set<string>) => { setEnabled(next); ls.set(KEY_COUNTRIES, JSON.stringify([...next])); };
+  const toggleCountry = (c: string, on: boolean) => { const next = new Set(enabled); if (on) next.add(c); else next.delete(c); setCountries(next); };
+
+  const maxDate = iso(cal.yest);
+  const nOn = [...enabled].filter((c) => c !== "Other").length;
 
   return (
-    <motion.main
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="mx-auto max-w-[1600px] px-3 py-2 grid gap-2 h-dvh grid-rows-[auto_auto_minmax(0,1fr)_minmax(0,1fr)]"
-    >
-      {/* Top bar */}
-      <motion.div variants={item}>
-        <TopBar
-          active="overview"
-          right={
-            <>
-              <span className="text-muted">{period.range}</span>
-              <div className="flex rounded border border-line overflow-hidden">
-                {["7d", "30d", "QTD", "YTD"].map((t, i) => (
-                  <button
-                    key={t}
-                    className={`px-2 py-0.5 ${i === 1 ? "bg-surface-2 text-text" : "text-muted hover:text-text"}`}
-                    aria-pressed={i === 1}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-              <span className="text-muted">{period.compare}</span>
-            </>
-          }
-        />
-      </motion.div>
-
-      {/* KPI strip */}
-      <motion.div variants={item} className="grid grid-cols-5 lg:grid-cols-10 gap-1.5">
-        {kpis.map((k) => (
-          <div key={k.label} className="panel px-2 py-1.5 flex flex-col gap-0.5">
-            <div className="flex justify-between items-baseline">
-              <span className="text-[10.5px] text-muted">{k.label}</span>
-              <Delta v={k.delta} goodWhen={k.goodWhen} />
-            </div>
-            <div className="flex items-end justify-between gap-1">
-              <span className="num text-[16px] font-semibold leading-none">{fmt(k.value, k.format)}</span>
-              <Sparkline data={k.trend} w={44} h={14} color={k.goodWhen === "down" ? "var(--blue)" : "var(--teal)"} />
-            </div>
-          </div>
-        ))}
-      </motion.div>
-
-      {/* Row 1: channels | trend | alerts+funnel */}
-      <div className="grid grid-cols-12 gap-2 min-h-0">
-        <Panel title="Channels" meta={`${money(totalSpend)} · ${totalFtd.toLocaleString()} FTDs`} className="col-span-5">
-          <table className="w-full num">
-            <thead>
-              <tr>
-                <th className="th">Channel</th><th className="th">Spend</th><th className="th">Impr</th><th className="th">Clicks</th>
-                <th className="th">CTR</th><th className="th">Leads</th><th className="th">FTD</th><th className="th">CPA</th><th className="th">ROAS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {channels.map((c) => (
-                <tr key={c.channel}>
-                  <td className="td">
-                    <div className="flex flex-col gap-0.5">
-                      <span>{c.channel}</span>
-                      <div className="bar" style={{ width: `${(c.spend / channels[0].spend) * 100}%` }} />
-                    </div>
-                  </td>
-                  <td className="td">{money(c.spend)}</td>
-                  <td className="td text-muted">{compact(c.impr)}</td>
-                  <td className="td text-muted">{compact(c.clicks)}</td>
-                  <td className="td text-muted">{pct((c.clicks / c.impr) * 100, 2)}</td>
-                  <td className="td">{c.leads.toLocaleString()}</td>
-                  <td className="td font-medium">{c.ftd.toLocaleString()}</td>
-                  <td className="td">{money(c.spend / c.ftd)}</td>
-                  <td className={`td font-medium ${c.roas >= 3.5 ? "text-up" : c.roas < 2.5 ? "text-down" : ""}`}>{c.roas.toFixed(1)}×</td>
-                </tr>
+    <>
+      <header>
+        <div className="row">
+          <div className="brand"><Logo /><span className="sep"></span><h1>Marketing Dashboard - Plan vs Reality</h1></div>
+          <LayoutGroup id="maintabs">
+            <div className="tabs">
+              {TABS.map(([t, lbl]) => (
+                <button type="button" key={t} className={tab === t ? "on" : ""} onClick={() => pickTab(t)}>
+                  {tab === t && <Pill id="maintab" className="pill" />}
+                  <span>{lbl}</span>
+                </button>
               ))}
-            </tbody>
-          </table>
-        </Panel>
-
-        <Panel title="Daily spend vs FTDs" meta="hover bars" className="col-span-4">
-          <TrendChart />
-        </Panel>
-
-        <div className="col-span-3 grid grid-rows-2 gap-2 min-h-0">
-          <Panel title="Needs attention" meta={`${alerts.length}`}>
-            <ul className="flex flex-col gap-1 px-1">
-              {alerts.map((a) => (
-                <li key={a.text} className="flex gap-1.5 text-[11px] leading-snug">
-                  <span className={`mt-[5px] shrink-0 w-1.5 h-1.5 rounded-full ${a.level === "warn" ? "bg-warn" : "bg-blue"}`} />
-                  <span>{a.text}</span>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-          <Panel title="Funnel" meta="conversion between stages">
-            <ul className="flex flex-col gap-[3px] px-1 num">
-              {funnel.map((f, i) => {
-                const prev = funnel[i - 1]?.value;
-                const rate = prev ? (f.value / prev) * 100 : null;
-                const w = Math.max(8, (Math.log10(f.value) / Math.log10(funnel[0].value)) * 100);
-                return (
-                  <li key={f.stage} className="grid grid-cols-[76px_1fr_44px_40px] items-center gap-1 text-[11px]">
-                    <span className="text-muted truncate">{f.stage}</span>
-                    <div className="h-[9px] rounded-sm bg-surface-2 overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-sm"
-                        style={{ background: "linear-gradient(90deg,var(--blue),var(--teal))" }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${w}%` }}
-                        transition={{ duration: 0.6, delay: 0.2 + i * 0.06 }}
-                      />
-                    </div>
-                    <span className="text-right">{compact(f.value)}</span>
-                    <span className="text-right text-muted">{rate === null ? "" : rate < 1 ? pct(rate, 2) : pct(rate, 1)}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </Panel>
+            </div>
+          </LayoutGroup>
         </div>
-      </div>
-
-      {/* Row 2: campaigns | regions | keywords */}
-      <div className="grid grid-cols-12 gap-2 min-h-0">
-        <Panel title="Campaigns" meta="top 8 by spend" className="col-span-6">
-          <table className="w-full num">
-            <thead>
-              <tr>
-                <th className="th">Campaign</th><th className="th">Channel</th><th className="th">Spend</th><th className="th">Budget</th>
-                <th className="th">FTD</th><th className="th">CPA</th><th className="th">ROAS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {campaigns.map((c) => (
-                <tr key={c.name}>
-                  <td className="td">
-                    <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle ${statusDot[c.status]}`} title={c.status} />
-                    {c.name}
-                  </td>
-                  <td className="td text-muted text-left">{c.channel}</td>
-                  <td className="td">{money(c.spend)}</td>
-                  <td className="td">
-                    <div className="flex items-center gap-1.5 justify-end">
-                      <div className="w-12 h-[5px] rounded-sm bg-surface-2 overflow-hidden">
-                        <div className={`h-full ${c.budgetUsed > 0.9 ? "bg-warn" : "bg-blue"}`} style={{ width: `${c.budgetUsed * 100}%` }} />
-                      </div>
-                      <span className="text-muted w-7 text-right">{Math.round(c.budgetUsed * 100)}%</span>
-                    </div>
-                  </td>
-                  <td className="td font-medium">{c.ftd}</td>
-                  <td className={`td ${c.cpa > 130 ? "text-down" : ""}`}>{money(c.cpa, 2)}</td>
-                  <td className={`td font-medium ${c.roas >= 3.5 ? "text-up" : c.roas < 2.5 ? "text-down" : ""}`}>{c.roas.toFixed(1)}×</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Panel>
-
-        <Panel title="Regions" meta="share of spend" className="col-span-3">
-          <table className="w-full num">
-            <thead>
-              <tr><th className="th">Region</th><th className="th">Spend</th><th className="th">FTD</th><th className="th">CPA</th></tr>
-            </thead>
-            <tbody>
-              {regions.map((r) => (
-                <tr key={r.region}>
-                  <td className="td">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-14 truncate">{r.region}</span>
-                      <div className="flex-1 h-[5px] rounded-sm bg-surface-2 overflow-hidden">
-                        <div className="h-full bg-teal/80" style={{ width: `${r.share * 100 * 3}%` }} />
-                      </div>
-                      <span className="text-muted w-7 text-right">{Math.round(r.share * 100)}%</span>
-                    </div>
-                  </td>
-                  <td className="td">{money(r.spend)}</td>
-                  <td className="td font-medium">{r.ftd.toLocaleString()}</td>
-                  <td className={`td ${r.cpa > 150 ? "text-down" : ""}`}>{money(r.cpa, 2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Panel>
-
-        <Panel title="Search terms" meta="Google Search · by clicks" className="col-span-3">
-          <table className="w-full num">
-            <thead>
-              <tr><th className="th">Term</th><th className="th">Clicks</th><th className="th">CPC</th><th className="th">FTD</th></tr>
-            </thead>
-            <tbody>
-              {topKeywords.map((k) => (
-                <tr key={k.kw}>
-                  <td className="td">{k.kw}</td>
-                  <td className="td">{compact(k.clicks)}</td>
-                  <td className="td text-muted">{money(k.cpc, 2)}</td>
-                  <td className="td font-medium">{k.ftd}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Panel>
-      </div>
-    </motion.main>
+        <div className="row filters">
+          <div className="field">
+            <label htmlFor="from">From</label>
+            <input type="date" id="from" value={range.from} max={maxDate} onChange={(e) => onDate("from")(e.target.value)} />
+            <label htmlFor="to">to</label>
+            <input type="date" id="to" value={range.to} max={maxDate} onChange={(e) => onDate("to")(e.target.value)} />
+            <Select
+              ariaLabel="Quick range" placeholder="Custom range" width={210}
+              value={period.id.startsWith("c_") ? null : period.id}
+              options={cal.periods.map((p) => ({ value: p.id, label: p.label, hint: p.full }))}
+              onChange={pickQuick}
+            />
+          </div>
+          <div className="field">
+            <label>Avenue</label>
+            <ChannelPicker value={chan} onChange={pickChan} />
+          </div>
+          <div className="field pick" onClick={(e) => e.stopPropagation()}>
+            <label htmlFor="cbtn">Countries</label>
+            <motion.button type="button" id="cbtn" className="btn" aria-haspopup="true" aria-expanded={pickOpen} onClick={() => setPickOpen((o) => !o)} whileTap={{ scale: 0.98 }}>
+              {nOn}/{COUNTRIES.length} selected
+            </motion.button>
+            <AnimatePresence>
+              {pickOpen && (
+                <motion.div id="cpop" className="pop" {...POP}>
+                  <div className="pact">
+                    <button type="button" onClick={() => setCountries(new Set(PICKABLE))}>All</button>
+                    <button type="button" onClick={() => setCountries(new Set())}>None</button>
+                  </div>
+                  {PICKABLE.map((c) => (
+                    <motion.label key={c} whileHover={{ x: 2 }}>
+                      <input type="checkbox" value={c} checked={enabled.has(c)} onChange={(e) => toggleCountry(c, e.target.checked)} />
+                      <Flag country={c} />{c}
+                    </motion.label>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </header>
+      <main>
+        <AnimatePresence>{err && <motion.div id="errBox" {...PANEL}>{err}</motion.div>}</AnimatePresence>
+        <AnimatePresence mode="wait" initial={false}>
+          {ctx && tab === "kpi" && (
+            <motion.div key={"kpi|" + ctx.p.id + "|" + chan} className="panel" {...PANEL}>
+              <Overview agg={ctx.agg} period={ctx.p} chan={chan} enabled={enabled} months={ctx.months} />
+            </motion.div>
+          )}
+          {ctx && tab === "perf" && (
+            <motion.div key={"perf|" + ctx.p.id + "|" + chan} className="panel" {...PANEL}>
+              <PerfGrid agg={ctx.agg} period={ctx.p} chan={chan} enabled={enabled} />
+            </motion.div>
+          )}
+          {ctx && tab === "recs" && (
+            <motion.div key={"recs|" + ctx.p.id} className="panel" {...PANEL}>
+              <Recs agg={ctx.agg} period={ctx.p} cal={cal} hist={ctx.hist} months={ctx.months} enabled={enabled} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+    </>
   );
 }
