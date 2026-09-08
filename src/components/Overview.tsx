@@ -71,7 +71,7 @@ function trendConfig(pts: Pt[], f: Fmt, cost: boolean): ChartConfiguration {
 
 function donutConfig(labels: string[], values: number[], colors: string[], f: Fmt): ChartConfiguration {
   const total = values.reduce((s, v) => s + v, 0) || 1;
-  return {
+  const cfg: ChartConfiguration<"doughnut"> = {
     type: "doughnut",
     data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: "#fff", borderWidth: 2, hoverOffset: 4 }] },
     options: {
@@ -82,6 +82,7 @@ function donutConfig(labels: string[], values: number[], colors: string[], f: Fm
       },
     },
   };
+  return cfg as unknown as ChartConfiguration;
 }
 
 function countryConfig(rows: { name: string; Actual: number; Plan: number }[]): ChartConfiguration {
@@ -131,9 +132,10 @@ export function Overview({ agg, period, chan, enabled, months }: Props) {
   // Donut 3: funded accounts by country, top 5 + other.
   const byCountryShare = useMemo(() => {
     const d = chanData(agg, chan);
-    const rows = COUNTRIES.filter((c) => enabled.has(c)).map((c) => ({ name: c, v: d[c]?.FundedAccounts ?? 0 })).filter((r) => r.v > 0).sort((a, b) => b.v - a.v);
+    const rows = COUNTRIES.filter((c) => enabled.has(c)).map((c) => ({ name: c as string, v: d[c]?.FundedAccounts ?? 0 })).filter((r) => r.v > 0).sort((a, b) => b.v - a.v);
     const top = rows.slice(0, 5), rest = rows.slice(5).reduce((s, r) => s + r.v, 0);
-    const labels = top.map((r) => r.name).concat(rest ? ["Other"] : []), values = top.map((r) => r.v).concat(rest ? [rest] : []);
+    const labels: string[] = top.map((r) => r.name), values: number[] = top.map((r) => r.v);
+    if (rest) { labels.push("Other"); values.push(rest); }
     return donutConfig(labels, values, PALETTE, "n");
   }, [agg, chan, enabled]);
 
