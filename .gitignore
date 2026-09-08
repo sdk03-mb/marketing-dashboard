@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw source sheets (data replicated in src/lib/plan.ts)
+public/*.csv
