@@ -34,11 +34,12 @@ async function flagData(c: string): Promise<string | null> {
 /** Renders a Chart.js config off-screen and returns a PNG data URL. */
 async function chartPng(config: ChartConfiguration, wPx: number, hPx: number): Promise<string> {
   const canvas = document.createElement("canvas");
-  canvas.width = wPx * 2; canvas.height = hPx * 2; // 2x for print sharpness
+  // 1.5x is sharp enough for print and roughly halves the pixel work versus 2x.
+  canvas.width = wPx * 1.5; canvas.height = hPx * 1.5;
   canvas.style.width = wPx + "px"; canvas.style.height = hPx + "px";
   canvas.style.position = "fixed"; canvas.style.left = "-10000px"; document.body.appendChild(canvas);
-  const chart = new Chart(canvas, { ...config, options: { ...config.options, animation: false, responsive: false, devicePixelRatio: 2 } });
-  await new Promise((r) => setTimeout(r, 30));
+  const chart = new Chart(canvas, { ...config, options: { ...config.options, animation: false, responsive: false, devicePixelRatio: 1.5 } });
+  await new Promise((r) => setTimeout(r, 0));
   const url = canvas.toDataURL("image/png");
   chart.destroy(); canvas.remove();
   return url;
@@ -90,6 +91,9 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
   const stamp = "Marketing Dashboard - Plan vs Reality · " + period.label + " · " + chanLabel;
   const countries = COUNTRIES.filter((c) => enabled.has(c));
   const flags = new Map<string, string | null>(await Promise.all(countries.map(async (c) => [c, await flagData(c)] as const)));
+  // Month grids are built once and reused by the overview and every country page.
+  const monthGrids = months.map((mo) => ({ l: mo.label.replace(" MTD", "*"), G: buildGrid(mo.agg, mo, chan, enabled) }));
+  const yieldUI = () => new Promise((r) => setTimeout(r, 0));
 
   const heading = (title: string, sub?: string, flag?: string | null) => {
     let x = M;
@@ -172,7 +176,7 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
     const colW = (W - 2 * M - 2 * GAP) / 3, chartH = 70;
     const byC = G.groups.filter((g) => !g.tot && g.name !== "Other");
     const avenues = CHANNEL_NAMES.map((ch) => ({ name: ch.replace(" / Google Search", ""), v: sumBuckets(...countries.map((c) => agg[ch]?.[c])).Spend })).filter((r) => r.v > 0).sort((a, b) => b.v - a.v);
-    const monthSeries = months.map((mo) => { const mg = buildGrid(mo.agg, mo, chan, enabled); const t = mg.groups.find((x) => x.tot) ?? mg.groups[0]; return { l: mo.label.replace(" MTD", "*"), a: t?.act.Spend || 0, p: t?.pl.Spend || 0 }; });
+    const monthSeries = monthGrids.map(({ l, G: mg }) => { const t = mg.groups.find((x) => x.tot) ?? mg.groups[0]; return { l, a: t?.act.Spend || 0, p: t?.pl.Spend || 0 }; });
     const [img1, img2, img3] = await Promise.all([
       chartPng(barCfg(byC.map((g) => g.name), byC.map((g) => g.pl.FundedAccounts), byC.map((g) => g.act.FundedAccounts), "n"), 1100, 560),
       chartPng(donutCfg(avenues.map((a) => a.name), avenues.map((a) => a.v), PALETTE), 1100, 560),
@@ -222,7 +226,8 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
 
     const rx = M + half + GAP, rw = half;
     // Country trend charts: spend and funded accounts, last 12 months
-    const ms = months.map((mo) => { const mg = buildGrid(mo.agg, mo, chan, enabled); const cg = mg.groups.find((x) => x.name === c); return { l: mo.label.replace(" MTD", "*"), sa: cg?.act.Spend || 0, sp: cg?.pl.Spend || 0, fa: cg?.act.FundedAccounts || 0, fp: cg?.pl.FundedAccounts || 0 }; });
+    await yieldUI(); // keep the page responsive between country pages
+    const ms = monthGrids.map(({ l, G: mg }) => { const cg = mg.groups.find((x) => x.name === c); return { l, sa: cg?.act.Spend || 0, sp: cg?.pl.Spend || 0, fa: cg?.act.FundedAccounts || 0, fp: cg?.pl.FundedAccounts || 0 }; });
     const [t1, t2] = await Promise.all([
       chartPng(lineCfg(ms.map((m) => m.l), ms.map((m) => m.sp), ms.map((m) => m.sa), "$0"), 900, 420),
       chartPng(lineCfg(ms.map((m) => m.l), ms.map((m) => m.fp), ms.map((m) => m.fa), "n"), 900, 420),

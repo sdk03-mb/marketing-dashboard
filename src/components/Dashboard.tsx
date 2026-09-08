@@ -51,6 +51,13 @@ export function Dashboard() {
     catch { return new Set<string>(METRICS.map((m) => m.l)); }
   });
   const [mOpen, setMOpen] = useState(false);
+  const [building, setBuilding] = useState(false);
+  const makeReport = async () => {
+    if (!ctx || building) return;
+    setBuilding(true);
+    try { await downloadReport({ agg: ctx.agg, period: ctx.p, chan, enabled, cal, hist: ctx.hist, months: ctx.months }); }
+    finally { setBuilding(false); }
+  };
   const setRows = (next: Set<string>) => { setMetrics(next); ls.set(KEY_METRICS, JSON.stringify([...next])); };
   const toggleRow = (l: string, on: boolean) => { const next = new Set(metrics); if (on) next.add(l); else next.delete(l); setRows(next); };
   const [ctx, setCtx] = useState<Ctx | null>(null);
@@ -118,9 +125,8 @@ export function Dashboard() {
         <div className="row">
           <div className="brand"><Logo /><span className="sep"></span><h1>Marketing Dashboard - Plan vs Reality</h1></div>
           <div className="hright">
-          <motion.button type="button" className="btn report" disabled={!ctx} whileTap={{ scale: 0.98 }}
-            onClick={() => ctx && downloadReport({ agg: ctx.agg, period: ctx.p, chan, enabled, cal, hist: ctx.hist, months: ctx.months })}>
-            <FileDown size={15} aria-hidden="true" /> Report (PDF)
+          <motion.button type="button" className="btn report" disabled={!ctx || building} whileTap={{ scale: 0.98 }} onClick={makeReport}>
+            <FileDown size={15} aria-hidden="true" /> {building ? "Building report..." : "Report (PDF)"}
           </motion.button>
           <LayoutGroup id="maintabs">
             <div className="tabs">
