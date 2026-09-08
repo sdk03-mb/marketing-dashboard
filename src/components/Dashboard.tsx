@@ -15,6 +15,8 @@ import { Overview } from "./Overview";
 import { PerfGrid } from "./PerfGrid";
 import { Recs } from "./Recs";
 import { Select } from "./Select";
+import { FileDown } from "lucide-react";
+import { downloadReport } from "@/lib/report";
 
 type Tab = "kpi" | "perf" | "recs";
 const TABS: [Tab, string][] = [["kpi", "Overview"], ["perf", "Performance"], ["recs", "Recommendations"]];
@@ -107,6 +109,11 @@ export function Dashboard() {
       <header>
         <div className="row">
           <div className="brand"><Logo /><span className="sep"></span><h1>Marketing Dashboard - Plan vs Reality</h1></div>
+          <div className="hright">
+          <motion.button type="button" className="btn report" disabled={!ctx} whileTap={{ scale: 0.98 }}
+            onClick={() => ctx && downloadReport({ agg: ctx.agg, period: ctx.p, chan, enabled, cal, hist: ctx.hist, months: ctx.months })}>
+            <FileDown size={15} aria-hidden="true" /> Report (PDF)
+          </motion.button>
           <LayoutGroup id="maintabs">
             <div className="tabs">
               {TABS.map(([t, lbl]) => (
@@ -117,6 +124,7 @@ export function Dashboard() {
               ))}
             </div>
           </LayoutGroup>
+          </div>
         </div>
         <div className="row filters">
           <div className="field">

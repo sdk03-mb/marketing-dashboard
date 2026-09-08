@@ -116,6 +116,10 @@ select { cursor: pointer; }
 .pill { position: absolute; inset: 0; background: var(--card); border-radius: 7px; box-shadow: 0 1px 2px rgba(0,0,0,.08); z-index: 0; }
 .btn { font: inherit; font-size: 13.5px; color: var(--ink); padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); cursor: pointer; }
 .btn:hover { border-color: #cfd4dc; }
+.hright { display: flex; align-items: center; gap: 12px; }
+.btn.report { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; color: var(--accent); border-color: var(--accent-bg); background: var(--accent-bg); }
+.btn.report:hover { background: #dde8f5; border-color: #dde8f5; }
+.btn.report:disabled { opacity: .5; cursor: default; }
 .pick { position: relative; }
 .pop[hidden] { display: none; }
 .pop { position: absolute; top: 44px; left: 0; text-align: left; z-index: 50; width: 300px; max-height: 420px; overflow: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px rgba(20,24,40,.12); padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
