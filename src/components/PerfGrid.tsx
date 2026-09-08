@@ -5,8 +5,12 @@ import { buildGrid, type Agg, type Period } from "@/lib/engine";
 import { fmt, signed } from "@/lib/format";
 import { Flag } from "./Flag";
 
-export function PerfGrid({ agg, period, chan, enabled }: { agg: Agg; period: Period; chan: string; enabled: Set<string> }) {
+type Props = { agg: Agg; period: Period; chan: string; enabled: Set<string>; metrics?: Set<string> };
+
+export function PerfGrid({ agg, period, chan, enabled, metrics }: Props) {
   const G = buildGrid(agg, period, chan, enabled);
+  // Row filter by metric label; undefined means show everything.
+  const rows = metrics ? G.rows.filter((r) => metrics.has(r.m.l)) : G.rows;
   const ref = useRef<HTMLDivElement>(null);
   const empty = G.groups.length === 0;
   // Hover tint: the cell, its row, and its single column.
@@ -63,9 +67,12 @@ export function PerfGrid({ agg, period, chan, enabled }: { agg: Agg; period: Per
           </tr>
         </thead>
         <tbody>
-          {G.rows.map((r, ri) => (
+          {rows.length === 0 && (
+            <tr><th className="rowh">No rows selected</th><td colSpan={nCols - 1} className="mute" style={{ textAlign: "left" }}>Pick at least one metric in the Rows filter.</td></tr>
+          )}
+          {rows.map((r, ri) => (
             <Fragment key={ri}>
-            {(ri === 0 || G.rows[ri - 1].m.group !== r.m.group) && (
+            {(ri === 0 || rows[ri - 1].m.group !== r.m.group) && (
               <tr className="grp"><th className="rowh gname">{r.m.group}</th><td colSpan={nCols - 1}></td></tr>
             )}
             <tr>

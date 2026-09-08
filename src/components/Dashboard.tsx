@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import {
-  chanData, hasLive, hasSnapshot, iso, loadPeriod, makeCal, monthPeriods, periodFor, planFor, syntheticAgg,
+  METRICS, chanData, hasLive, hasSnapshot, iso, loadPeriod, makeCal, monthPeriods, periodFor, planFor, syntheticAgg,
   type Agg, type Cal, type Hist, type MonthData, type Period,
 } from "@/lib/engine";
 import { ALLCH, CHANNEL_NAMES, COUNTRIES } from "@/lib/plan";
@@ -22,7 +22,7 @@ type Tab = "kpi" | "perf" | "recs";
 const TABS: [Tab, string][] = [["kpi", "Overview"], ["perf", "Performance"], ["recs", "Recommendations"]];
 type Ctx = { agg: Agg; p: Period; hist: Hist; months: MonthData[] };
 
-const KEY_PERIOD = "mkt_period3", KEY_CHAN = "mkt_chan3", KEY_TAB = "mkt_tab4", KEY_COUNTRIES = "mkt_countries4";
+const KEY_PERIOD = "mkt_period3", KEY_CHAN = "mkt_chan3", KEY_TAB = "mkt_tab4", KEY_COUNTRIES = "mkt_countries4", KEY_METRICS = "mkt_metrics1";
 const CHAN_OPTIONS = [ALLCH, ...CHANNEL_NAMES];
 const PICKABLE: string[] = [...COUNTRIES, "Other"];
 const ls = {
@@ -45,6 +45,14 @@ export function Dashboard() {
     catch { return new Set<string>(COUNTRIES); }
   });
   const [pickOpen, setPickOpen] = useState(false);
+  // Which metric rows the table shows; remembered per browser.
+  const [metrics, setMetrics] = useState<Set<string>>(() => {
+    try { const v = JSON.parse(ls.get(KEY_METRICS) || "null"); return new Set<string>(Array.isArray(v) ? v : METRICS.map((m) => m.l)); }
+    catch { return new Set<string>(METRICS.map((m) => m.l)); }
+  });
+  const [mOpen, setMOpen] = useState(false);
+  const setRows = (next: Set<string>) => { setMetrics(next); ls.set(KEY_METRICS, JSON.stringify([...next])); };
+  const toggleRow = (l: string, on: boolean) => { const next = new Set(metrics); if (on) next.add(l); else next.delete(l); setRows(next); };
   const [ctx, setCtx] = useState<Ctx | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const cache = useRef<Record<string, Agg>>({});
@@ -83,13 +91,13 @@ export function Dashboard() {
     return () => { live = false; };
   }, [cal, period]);
 
-  // Close the country picker on outside click.
+  // Close the country and metric pickers on outside click.
   useEffect(() => {
-    if (!pickOpen) return;
-    const close = () => setPickOpen(false);
+    if (!pickOpen && !mOpen) return;
+    const close = () => { setPickOpen(false); setMOpen(false); };
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
-  }, [pickOpen]);
+  }, [pickOpen, mOpen]);
 
   const pickChan = useCallback((v: string) => { setChan(v); ls.set(KEY_CHAN, v); }, []);
   const pickTab = useCallback((v: Tab) => { setTab(v); ls.set(KEY_TAB, v); }, []);
@@ -165,6 +173,31 @@ export function Dashboard() {
               )}
             </AnimatePresence>
           </div>
+          <div className="field pick" onClick={(e) => e.stopPropagation()}>
+            <label htmlFor="mbtn">Rows</label>
+            <motion.button type="button" id="mbtn" className="btn" aria-haspopup="true" aria-expanded={mOpen} onClick={() => setMOpen((o) => !o)} whileTap={{ scale: 0.98 }}>
+              {metrics.size}/{METRICS.length} metrics
+            </motion.button>
+            <AnimatePresence>
+              {mOpen && (
+                <motion.div className="pop mpop" {...POP}>
+                  <div className="pact">
+                    <button type="button" onClick={() => setRows(new Set(METRICS.map((m) => m.l)))}>All</button>
+                    <button type="button" onClick={() => setRows(new Set())}>None</button>
+                  </div>
+                  {METRICS.map((m, i) => (
+                    <Fragment key={m.l}>
+                      {(i === 0 || METRICS[i - 1].group !== m.group) && <div className="pgrp">{m.group}</div>}
+                      <motion.label whileHover={{ x: 2 }}>
+                        <input type="checkbox" checked={metrics.has(m.l)} onChange={(e) => toggleRow(m.l, e.target.checked)} />
+                        {m.l}
+                      </motion.label>
+                    </Fragment>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </header>
       <main>
@@ -177,7 +210,7 @@ export function Dashboard() {
           )}
           {ctx && tab === "perf" && (
             <motion.div key={"perf|" + ctx.p.id + "|" + chan} className="panel" {...PANEL}>
-              <PerfGrid agg={ctx.agg} period={ctx.p} chan={chan} enabled={enabled} />
+              <PerfGrid agg={ctx.agg} period={ctx.p} chan={chan} enabled={enabled} metrics={metrics} />
             </motion.div>
           )}
           {ctx && tab === "recs" && (
