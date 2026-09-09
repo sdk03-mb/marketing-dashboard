@@ -21,7 +21,7 @@ export function PerfGrid({ agg, period, chan, enabled, metrics }: Props) {
   // Pin the total group (Expected / Actual / Diff) after the sticky row header.
   useLayoutEffect(() => {
     const stick = () => {
-      const tbl = ref.current?.querySelector("table"); if (!tbl) return;
+      const tbl = ref.current?.querySelector<HTMLTableElement>("table.xl"); if (!tbl) return;
       const row = [...tbl.tBodies[0].rows].find((r) => [...r.cells].some((c) => c.classList.contains("tot"))); if (!row) return;
       const tots = [...row.cells].filter((c) => c.classList.contains("tot"));
       let x = row.cells[0].offsetWidth;
@@ -43,8 +43,42 @@ export function PerfGrid({ agg, period, chan, enabled, metrics }: Props) {
     return <div id="perf"><p className="empty nocountry">No country selected. Pick at least one country to see performance against plan.</p></div>;
   }
 
+  // Mobile: one card per country instead of the wide table (CSS swaps which one shows).
+  const cellText = (c: (typeof rows)[number]["cells"][number], f: (typeof rows)[number]["m"]["f"]) => ({
+    e: c.nodata && !c.e ? "-" : fmt(c.e, f),
+    a: c.na || c.nospend || c.nodata ? "-" : fmt(c.a, f),
+    d: c.na || c.nospend || c.nodata || !c.e ? "-" : signed(c.diff, f),
+    st: c.na ? "bad" : c.nospend || c.nodata ? "" : c.status,
+  });
+  const cards = (
+    <div className="mcards">
+      {G.groups.map((g, gi) => (
+        <details key={g.name} className={"mcard" + (g.tot ? " tot" : "")} open={gi === 0}>
+          <summary><Flag country={g.name} /><span>{g.name}</span>
+            <span className="msum">{fmt(g.act.Spend, "$0")} <i>spent</i> {fmt(g.act.FundedAccounts, "n")} <i>funded</i></span>
+          </summary>
+          <table className="mt">
+            <thead><tr><th>Metric</th><th>Expected</th><th>Actual</th><th>Diff</th></tr></thead>
+            <tbody>
+              {rows.map((r, ri) => {
+                const t = cellText(r.cells[gi], r.m.f);
+                return (
+                  <Fragment key={ri}>
+                    {(ri === 0 || rows[ri - 1].m.group !== r.m.group) && <tr className="mgrp"><th colSpan={4}>{r.m.group}</th></tr>}
+                    <tr><th>{r.m.l}</th><td className="exp">{t.e}</td><td>{t.a}</td><td className={t.st}>{t.d}</td></tr>
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </details>
+      ))}
+    </div>
+  );
+
   return (
     <div id="perf" ref={ref}>
+      {cards}
       <table className="xl compact" onMouseLeave={() => setHot(null)}>
         <thead>
           <tr>

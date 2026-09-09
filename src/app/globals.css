@@ -303,20 +303,71 @@ svg.mini { width: 100%; height: auto; background: var(--bg); border-radius: 10px
 ::-webkit-scrollbar-thumb:hover { background: #b9c0ca; }
 
 @media (max-width: 1000px) { header { gap: 14px; } }
-/* mobile: stack header, scroll filters, tighten paddings */
+/* mobile country cards (hidden on desktop) */
+.mcards { display: none; flex-direction: column; gap: 10px; padding: 10px; }
+.mcard { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.mcard.tot { background: var(--tot-bg); border-color: var(--tot-line); }
+.mcard summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 12px 14px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.mcard summary::-webkit-details-marker { display: none; }
+.mcard summary .flag { margin-right: 2px; }
+.mcard summary .msum { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--ink2); white-space: nowrap; }
+.mcard summary .msum i { font-style: normal; color: var(--ink3); margin: 0 6px 0 2px; }
+.mcard summary::after { content: "+"; color: var(--ink3); font-size: 16px; margin-left: 6px; }
+.mcard[open] summary::after { content: "-"; }
+table.mt { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--card); }
+.mt th, .mt td { padding: 7px 10px; border-top: 1px solid var(--line2); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mt thead th { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 500; }
+.mt tbody th { text-align: left; font-weight: 500; color: var(--ink2); white-space: normal; }
+.mt td.exp { color: var(--ink3); }
+.mt td.good { color: var(--good); background: var(--good-bg); font-weight: 600; }
+.mt td.warn { color: var(--warn); background: var(--warn-bg); font-weight: 600; }
+.mt td.bad { color: var(--bad); background: var(--bad-bg); font-weight: 600; }
+.mt tr.mgrp th { background: #f5f7fa; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); padding: 5px 10px; }
+
+@media (max-width: 1100px) { .rc .body { grid-template-columns: 1fr; } aside .charts { position: static; } .rc aside.side { position: static; padding-top: 0; } }
+
+/* mobile: stack header, scroll filters, cards instead of the wide table, single-column everything */
 @media (max-width: 720px) {
-  header { padding: 10px 14px 12px; }
-  header .row { gap: 10px; }
-  .brand h1 { font-size: 15px; }
-  header .filters { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
-  header .filters .field { flex: 0 0 auto; }
-  .cbtn { min-width: 200px; }
-  main { padding: 12px 14px; gap: 10px; }
-  .xl th.corner, .xl th.rowh, .xl.compact th.corner, .xl.compact th.rowh { min-width: 140px; white-space: normal; font-size: 12px; }
-  .rc summary { flex-wrap: wrap; gap: 8px 10px; padding: 12px 14px; }
-  .rc summary .kpi { margin-left: 0; flex-basis: 100%; }
-  .rc .body { padding: 4px 14px 16px; gap: 16px; }
-  .cta li { grid-template-columns: 1fr; gap: 4px; }
-  table.gt { font-size: 12.5px; } .gt th, .gt td { padding: 6px 8px; }
+  header { padding: 10px 12px 10px; gap: 8px; }
+  header .row { gap: 8px; }
+  .brand { gap: 10px; } .brand h1 { font-size: 14px; } .logo { height: 16px; } .sep { height: 18px; }
+  .hright { width: 100%; justify-content: space-between; }
+  .tabs { flex: 1 1 auto; } .tabs button { flex: 1 1 0; padding: 8px 6px; font-size: 12.5px; }
+  .btn.report span, .btn.report { font-size: 0; padding: 8px 10px; } .btn.report svg { font-size: 14px; }
+  header .filters { flex-wrap: wrap; gap: 8px; overflow: visible; }
+  header .filters .field { flex: 1 1 calc(50% - 4px); min-width: 0; }
+  header .filters .field:first-child { flex-basis: 100%; flex-wrap: wrap; }
+  header .filters .field:first-child > label { display: none; }
+  input[type=date] { flex: 1 1 0; min-width: 0; padding: 8px 8px; font-size: 13px; }
+  .spick, .cpick { flex: 1 1 100%; width: 100% !important; }
+  .cbtn, .sbtn, .field.pick .btn { min-width: 0; width: 100%; }
+  .field.pick { flex-wrap: wrap; } .field.pick > label { flex-basis: 100%; }
+  .pop { width: min(92vw, 360px) !important; max-height: 60vh; }
+  .cpick .pop, .spick .pop, .mpop { width: min(92vw, 360px) !important; }
+  main { padding: 10px 12px; gap: 10px; }
+  /* table -> cards */
+  #perf .xl { display: none; }
+  #perf .mcards { display: flex; }
+  #perf { background: transparent; border: none; }
+  .nocountry { background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  /* overview */
+  .kpihead { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .tile { padding: 12px; } .tile .tv { font-size: 20px; }
+  .donuts { grid-template-columns: 1fr; }
+  .kpigrid, .kpigrid.trends { grid-template-columns: 1fr; }
+  .ccard { padding: 12px 12px 6px; }
+  /* recommendations */
+  .rtabs { width: 100%; } .rtabs button { flex: 1 1 0; padding: 8px 10px; font-size: 13px; }
+  .rc summary { flex-wrap: wrap; gap: 6px 8px; padding: 12px 12px; font-size: 13.5px; }
+  .rc summary .kpi { margin-left: 0; flex-basis: 100%; font-size: 12px; }
+  .rc summary .kpi i { margin-right: 10px; }
+  .rc .body { padding: 4px 12px 14px; gap: 12px; }
+  .rc section { padding: 12px 0 4px; }
+  blockquote.why { font-size: 14.5px; padding: 10px 12px; }
+  .mm { overflow-x: auto; } .mm svg { min-width: 720px; max-width: none; }
+  .cta li { padding: 10px 12px; font-size: 13px; }
+  table.gt { font-size: 12px; max-width: none; } .gt th, .gt td { padding: 6px 6px; }
+  .acch { padding: 8px 0; }
 }
-@media (max-width: 1100px) { .rc .body { grid-template-columns: 1fr; } aside .charts { position: static; } }
+@media (max-width: 420px) { .tiles { grid-template-columns: 1fr 1fr; } .tile .tv { font-size: 18px; } }
