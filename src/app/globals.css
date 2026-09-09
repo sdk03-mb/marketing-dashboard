@@ -132,6 +132,33 @@ select { cursor: pointer; }
 .pact { grid-column: 1 / -1; display: flex; gap: 6px; padding: 2px 4px 8px; border-bottom: 1px solid var(--line2); margin-bottom: 4px; }
 .pact button { font: inherit; font-size: 12px; color: var(--accent); background: var(--accent-bg); border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
 
+/* filters menu: one button, one panel */
+.fwrap { margin-left: auto; }
+.fbtn { display: inline-flex; align-items: center; gap: 8px; max-width: 420px; }
+.fbtn.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+.fbtn .fsum { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink2); }
+.fbtn .fshort { display: none; }
+.fpanel { left: auto; right: 0; width: min(92vw, 720px); max-height: min(78vh, 760px); display: flex; flex-direction: column; gap: 0; padding: 0; }
+.fsec { padding: 14px 16px; border-bottom: 1px solid var(--line2); }
+.fsec:last-child { border-bottom: none; }
+.fsec h5 { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink2); margin-bottom: 10px; }
+.fsec h5 small { font-weight: 500; color: var(--ink3); font-size: 11px; }
+.fsec h5 .fact { margin-left: auto; display: inline-flex; gap: 6px; }
+.fsec h5 .fact button { font: inherit; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--accent); background: var(--accent-bg); border: none; border-radius: 6px; padding: 3px 9px; cursor: pointer; }
+.frow { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.frow input[type=date] { flex: 1 1 0; min-width: 0; }
+.fto { font-size: 12px; color: var(--ink3); }
+.fchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 12.5px; color: var(--ink2); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; transition: background .12s, border-color .12s, color .12s; }
+.chip:hover { border-color: #cfd4dc; }
+.chip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chip .flag { margin-right: 0; width: 16px; height: 11px; }
+.fgrp { margin-top: 8px; } .fgrp:first-of-type { margin-top: 0; }
+.fgl { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); margin-bottom: 5px; }
+.ffoot { display: flex; align-items: center; gap: 12px; background: var(--bg); }
+.fnote { font-size: 12px; color: var(--ink3); }
+.cpick, .cpick .cbtn { width: 100%; }
+.pmark.click { color: var(--ink2); }
 /* custom select (quick range) */
 .sbtn { display: inline-flex; align-items: center; gap: 8px; width: 100%; }
 .sbtn.ph .ctext { color: var(--ink2); }
@@ -340,9 +367,13 @@ table.mt { width: 100%; border-collapse: collapse; font-size: 12.5px; background
   header { padding: 10px 12px 10px; gap: 8px; }
   header .row { gap: 8px; }
   .brand { gap: 10px; } .brand h1 { font-size: 14px; } .logo { height: 16px; } .sep { height: 18px; }
-  .hright { width: 100%; justify-content: space-between; }
+  header .row { flex-wrap: wrap; }
+  .brand { flex-basis: 100%; }
   .tabs { flex: 1 1 auto; } .tabs button { flex: 1 1 0; padding: 8px 6px; font-size: 12.5px; }
-  .btn.report span, .btn.report { font-size: 0; padding: 8px 10px; } .btn.report svg { font-size: 14px; }
+  .fwrap { margin-left: 0; flex: 0 0 auto; position: static; }
+  .fbtn .fsum { display: none; } .fbtn .fshort { display: inline; }
+  .fpanel { position: fixed; left: 8px; right: 8px; top: 96px; width: auto; max-height: calc(100vh - 110px); }
+  .ffoot { flex-direction: column; align-items: stretch; }
   header .filters { flex-wrap: wrap; gap: 8px; overflow: visible; }
   header .filters .field { flex: 1 1 calc(50% - 4px); min-width: 0; }
   header .filters .field:first-child { flex-basis: 100%; flex-wrap: wrap; }

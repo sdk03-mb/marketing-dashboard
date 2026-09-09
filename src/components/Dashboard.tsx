@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import {
   METRICS, chanData, hasLive, hasSnapshot, iso, loadPeriod, makeCal, monthPeriods, periodFor, planFor, syntheticAgg,
@@ -14,8 +14,7 @@ import { PANEL, POP, Pill } from "./motion";
 import { Overview } from "./Overview";
 import { PerfGrid } from "./PerfGrid";
 import { Recs } from "./Recs";
-import { Select } from "./Select";
-import { FileDown } from "lucide-react";
+import { FileDown, SlidersHorizontal } from "lucide-react";
 import { downloadReport } from "@/lib/report";
 
 type Tab = "kpi" | "perf" | "recs";
@@ -44,13 +43,12 @@ export function Dashboard() {
     try { const v = JSON.parse(ls.get(KEY_COUNTRIES) || "null"); return new Set<string>(Array.isArray(v) ? v : COUNTRIES); }
     catch { return new Set<string>(COUNTRIES); }
   });
-  const [pickOpen, setPickOpen] = useState(false);
+  const [fOpen, setFOpen] = useState(false);
   // Which metric rows the table shows; remembered per browser.
   const [metrics, setMetrics] = useState<Set<string>>(() => {
     try { const v = JSON.parse(ls.get(KEY_METRICS) || "null"); return new Set<string>(Array.isArray(v) ? v : METRICS.map((m) => m.l)); }
     catch { return new Set<string>(METRICS.map((m) => m.l)); }
   });
-  const [mOpen, setMOpen] = useState(false);
   const [building, setBuilding] = useState(false);
   const makeReport = async () => {
     if (!ctx || building) return;
@@ -98,13 +96,13 @@ export function Dashboard() {
     return () => { live = false; };
   }, [cal, period]);
 
-  // Close the country and metric pickers on outside click.
+  // Close the filters menu on outside click.
   useEffect(() => {
-    if (!pickOpen && !mOpen) return;
-    const close = () => { setPickOpen(false); setMOpen(false); };
+    if (!fOpen) return;
+    const close = () => setFOpen(false);
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
-  }, [pickOpen, mOpen]);
+  }, [fOpen]);
 
   const pickChan = useCallback((v: string) => { setChan(v); ls.set(KEY_CHAN, v); }, []);
   const pickTab = useCallback((v: Tab) => { setTab(v); ls.set(KEY_TAB, v); }, []);
@@ -124,10 +122,6 @@ export function Dashboard() {
       <header>
         <div className="row">
           <div className="brand"><Logo /><span className="sep"></span><h1>Marketing Dashboard - Plan vs Reality</h1></div>
-          <div className="hright">
-          <motion.button type="button" className="btn report" disabled={!ctx || building} whileTap={{ scale: 0.98 }} onClick={makeReport}>
-            <FileDown size={15} aria-hidden="true" /> {building ? "Building report..." : "Report (PDF)"}
-          </motion.button>
           <LayoutGroup id="maintabs">
             <div className="tabs">
               {TABS.map(([t, lbl]) => (
@@ -138,68 +132,64 @@ export function Dashboard() {
               ))}
             </div>
           </LayoutGroup>
-          </div>
-        </div>
-        <div className="row filters">
-          <div className="field">
-            <label htmlFor="from">From</label>
-            <input type="date" id="from" value={range.from} max={maxDate} onChange={(e) => onDate("from")(e.target.value)} />
-            <label htmlFor="to">to</label>
-            <input type="date" id="to" value={range.to} max={maxDate} onChange={(e) => onDate("to")(e.target.value)} />
-            <Select
-              ariaLabel="Quick range" placeholder="Custom range" width={210}
-              value={period.id.startsWith("c_") ? null : period.id}
-              options={cal.periods.map((p) => ({ value: p.id, label: p.label, hint: p.full }))}
-              onChange={pickQuick}
-            />
-          </div>
-          <div className="field">
-            <label>Avenue</label>
-            <ChannelPicker value={chan} onChange={pickChan} />
-          </div>
-          <div className="field pick" onClick={(e) => e.stopPropagation()}>
-            <label htmlFor="cbtn">Countries</label>
-            <motion.button type="button" id="cbtn" className="btn" aria-haspopup="true" aria-expanded={pickOpen} onClick={() => setPickOpen((o) => !o)} whileTap={{ scale: 0.98 }}>
-              {nOn}/{COUNTRIES.length} selected
+          {/* One menu holds every filter plus the report button. */}
+          <div className="pick fwrap" onClick={(e) => e.stopPropagation()}>
+            <motion.button type="button" className={"btn fbtn" + (fOpen ? " on" : "")} aria-haspopup="true" aria-expanded={fOpen} onClick={() => setFOpen((o) => !o)} whileTap={{ scale: 0.98 }}>
+              <SlidersHorizontal size={15} aria-hidden="true" />
+              <span className="fsum">{period.label} · {chan.replace(" (combined)", "").replace(" / Google Search", "")} · {nOn}/{COUNTRIES.length} countries</span>
+              <span className="fshort">Filters</span>
             </motion.button>
             <AnimatePresence>
-              {pickOpen && (
-                <motion.div id="cpop" className="pop" {...POP}>
-                  <div className="pact">
-                    <button type="button" onClick={() => setCountries(new Set(PICKABLE))}>All</button>
-                    <button type="button" onClick={() => setCountries(new Set())}>None</button>
-                  </div>
-                  {PICKABLE.map((c) => (
-                    <motion.label key={c} whileHover={{ x: 2 }}>
-                      <input type="checkbox" value={c} checked={enabled.has(c)} onChange={(e) => toggleCountry(c, e.target.checked)} />
-                      <Flag country={c} />{c}
-                    </motion.label>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          <div className="field pick" onClick={(e) => e.stopPropagation()}>
-            <label htmlFor="mbtn">Rows</label>
-            <motion.button type="button" id="mbtn" className="btn" aria-haspopup="true" aria-expanded={mOpen} onClick={() => setMOpen((o) => !o)} whileTap={{ scale: 0.98 }}>
-              {metrics.size}/{METRICS.length} metrics
-            </motion.button>
-            <AnimatePresence>
-              {mOpen && (
-                <motion.div className="pop mpop" {...POP}>
-                  <div className="pact">
-                    <button type="button" onClick={() => setRows(new Set(METRICS.map((m) => m.l)))}>All</button>
-                    <button type="button" onClick={() => setRows(new Set())}>None</button>
-                  </div>
-                  {METRICS.map((m, i) => (
-                    <Fragment key={m.l}>
-                      {(i === 0 || METRICS[i - 1].group !== m.group) && <div className="pgrp">{m.group}</div>}
-                      <motion.label whileHover={{ x: 2 }}>
-                        <input type="checkbox" checked={metrics.has(m.l)} onChange={(e) => toggleRow(m.l, e.target.checked)} />
-                        {m.l}
-                      </motion.label>
-                    </Fragment>
-                  ))}
+              {fOpen && (
+                <motion.div className="pop fpanel" {...POP}>
+                  <section className="fsec">
+                    <h5>Period</h5>
+                    <div className="frow">
+                      <input type="date" aria-label="From" value={range.from} max={maxDate} onChange={(e) => onDate("from")(e.target.value)} />
+                      <span className="fto">to</span>
+                      <input type="date" aria-label="To" value={range.to} max={maxDate} onChange={(e) => onDate("to")(e.target.value)} />
+                    </div>
+                    <div className="fchips">
+                      {cal.periods.map((p) => (
+                        <button type="button" key={p.id} className={"chip" + (period.id === p.id ? " on" : "")} onClick={() => pickQuick(p.id)} title={p.full}>{p.label}</button>
+                      ))}
+                    </div>
+                  </section>
+                  <section className="fsec">
+                    <h5>Avenue</h5>
+                    <ChannelPicker value={chan} onChange={pickChan} />
+                  </section>
+                  <section className="fsec">
+                    <h5>Countries <small>{nOn}/{COUNTRIES.length}</small>
+                      <span className="fact"><button type="button" onClick={() => setCountries(new Set(PICKABLE))}>All</button><button type="button" onClick={() => setCountries(new Set())}>None</button></span>
+                    </h5>
+                    <div className="fchips">
+                      {PICKABLE.map((c) => (
+                        <button type="button" key={c} className={"chip" + (enabled.has(c) ? " on" : "")} onClick={() => toggleCountry(c, !enabled.has(c))}><Flag country={c} />{c}</button>
+                      ))}
+                    </div>
+                  </section>
+                  <section className="fsec">
+                    <h5>Table rows <small>{metrics.size}/{METRICS.length}</small>
+                      <span className="fact"><button type="button" onClick={() => setRows(new Set(METRICS.map((m) => m.l)))}>All</button><button type="button" onClick={() => setRows(new Set())}>None</button></span>
+                    </h5>
+                    {Array.from(new Set(METRICS.map((m) => m.group))).map((grp) => (
+                      <div key={grp} className="fgrp">
+                        <div className="fgl">{grp}</div>
+                        <div className="fchips">
+                          {METRICS.filter((m) => m.group === grp).map((m) => (
+                            <button type="button" key={m.l} className={"chip" + (metrics.has(m.l) ? " on" : "")} onClick={() => toggleRow(m.l, !metrics.has(m.l))}>{m.l}</button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </section>
+                  <section className="fsec ffoot">
+                    <motion.button type="button" className="btn report" disabled={!ctx || building} whileTap={{ scale: 0.98 }} onClick={makeReport}>
+                      <FileDown size={15} aria-hidden="true" /> {building ? "Building report..." : "Download report (PDF)"}
+                    </motion.button>
+                    <span className="fnote">Uses the period, avenue and countries selected above.</span>
+                  </section>
                 </motion.div>
               )}
             </AnimatePresence>
