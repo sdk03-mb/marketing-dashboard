@@ -76,7 +76,18 @@ function Card({ r, period, cal, hist, months, open }: CardProps) {
             <ul className="rsn">{m.reasoning.map((t, i) => <li key={i}><Rich text={t} /></li>)}</ul>
           </section>
           <Accordion title="What to fix" meta="what each department can do">
-            <EChart option={treeOption(m.fixTree)} height={Math.max(260, 26 * m.fixTree.children!.reduce((s, d) => s + (d.children?.length ?? 0), 0) + 40)} />
+            <div className="fixmap">
+              <EChart option={treeOption(m.fixTree)} height={Math.max(260, 26 * m.fixTree.children!.reduce((s, d) => s + (d.children?.length ?? 0), 0) + 40)} />
+            </div>
+            {/* Mobile: same content as a plain list (CSS swaps which one shows). */}
+            <div className="fixlist">
+              {m.fixTree.children?.map((d) => (
+                <div key={d.name} className={"fixdept " + (d.tone ?? "dept")}>
+                  <div className="fixdh">{d.name}</div>
+                  <ul>{d.children?.map((t) => <li key={t.name}>{t.name}</li>)}</ul>
+                </div>
+              ))}
+            </div>
           </Accordion>
           <Accordion title="Data points" meta={m.given.length + " rows, diff is actual - expected"}>
             <table className="gt">

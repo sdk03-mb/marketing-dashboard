@@ -303,6 +303,15 @@ svg.mini { width: 100%; height: auto; background: var(--bg); border-radius: 10px
 ::-webkit-scrollbar-thumb:hover { background: #b9c0ca; }
 
 @media (max-width: 1000px) { header { gap: 14px; } }
+/* what to fix: mindmap on desktop, list on mobile */
+.fixlist { display: none; flex-direction: column; gap: 8px; }
+.fixdept { border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 10px 12px; background: var(--card); }
+.fixdept.bad { border-left-color: #dc2626; } .fixdept.warn { border-left-color: #d97706; } .fixdept.good { border-left-color: #16a34a; }
+.fixdept .fixdh { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.fixdept ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.fixdept li { position: relative; padding-left: 16px; font-size: 13px; line-height: 1.45; }
+.fixdept li::before { content: ""; position: absolute; left: 2px; top: 7px; width: 7px; height: 7px; border: 1.5px solid var(--ink3); border-radius: 2px; }
+@media (max-width: 720px) { .fixmap { display: none; } .fixlist { display: flex; } }
 /* mobile country cards (hidden on desktop) */
 .mcards { display: none; flex-direction: column; gap: 10px; padding: 10px; }
 .mcard { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
