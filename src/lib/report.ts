@@ -1,10 +1,9 @@
 import { jsPDF } from "jspdf";
 import autoTable, { type CellHookData, type RowInput } from "jspdf-autotable";
-import { Chart, type ChartConfiguration } from "chart.js/auto";
-import { ALLCH, CHANNEL_NAMES, COUNTRIES, ISO } from "./plan";
-import { fmt, money, signed, type Fmt } from "./format";
+import { ALLCH, COUNTRIES, ISO } from "./plan";
+import { fmt, money, signed } from "./format";
 import {
-  buildCard, buildGrid, METRICS, recRows, sumBuckets,
+  buildCard, buildGrid, METRICS, recRows,
   type Agg, type Cal, type Hist, type MonthData, type Period, type RecRow, type Status,
 } from "./engine";
 
@@ -16,8 +15,6 @@ type RGB = [number, number, number];
 const INK: RGB = [26, 29, 35], INK2: RGB = [91, 98, 112], INK3: RGB = [154, 161, 173], LINE: RGB = [230, 233, 238], BAND: RGB = [245, 247, 250], HEAD: RGB = [238, 243, 251];
 const FILL: Record<Status, RGB | null> = { good: [228, 244, 234], warn: [253, 241, 207], bad: [251, 228, 231], "": null };
 const TEXT: Record<Status, RGB> = { good: [29, 107, 60], warn: [138, 97, 0], bad: [166, 58, 69], "": INK };
-const GREEN = "#16a34a", RED = "#dc2626", PLAN = "#6b7585", PALE = "#c9d3e2";
-const PALETTE = ["#2f5d8a", "#467bff", "#75d9d9", "#9aa1ad", "#c9d3e2", "#e3b64b", "#e08a95", "#6fbf8e"];
 const plain = (s: string) => s.replace(/\*\*/g, "");
 const lastY = (doc: jsPDF) => (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
 
@@ -31,58 +28,8 @@ async function flagData(c: string): Promise<string | null> {
   } catch { return null; }
 }
 
-/** Renders a Chart.js config off-screen and returns a PNG data URL. */
-async function chartPng(config: ChartConfiguration, wPx: number, hPx: number): Promise<string> {
-  const canvas = document.createElement("canvas");
-  // 1.5x is sharp enough for print and roughly halves the pixel work versus 2x.
-  canvas.width = wPx * 1.5; canvas.height = hPx * 1.5;
-  canvas.style.width = wPx + "px"; canvas.style.height = hPx + "px";
-  canvas.style.position = "fixed"; canvas.style.left = "-10000px"; document.body.appendChild(canvas);
-  const chart = new Chart(canvas, { ...config, options: { ...config.options, animation: false, responsive: false, devicePixelRatio: 1.5 } });
-  await new Promise((r) => setTimeout(r, 0));
-  const url = canvas.toDataURL("image/png");
-  chart.destroy(); canvas.remove();
-  return url;
-}
-const short = (v: number, f: Fmt) => {
-  if (f === "n") return v >= 1000 ? (v / 1000).toFixed(1) + "k" : String(Math.round(v));
-  if (v >= 1_000_000) return "$" + (v / 1_000_000).toFixed(1) + "m";
-  if (v >= 1000) return "$" + Math.round(v / 1000) + "k";
-  return "$" + Math.round(v);
-};
-const AXIS = { grid: { color: "#eef1f5" }, border: { display: false }, ticks: { color: "#9aa1ad", font: { size: 18, family: "Helvetica" } } };
-const LEGEND = { labels: { usePointStyle: true, pointStyle: "circle" as const, boxWidth: 10, color: "#5b6270", font: { size: 18, family: "Helvetica" } } };
-
-function barCfg(labels: string[], plan: number[], actual: number[], f: Fmt): ChartConfiguration {
-  return {
-    type: "bar",
-    data: { labels, datasets: [
-      { label: "Expected", data: plan, backgroundColor: PALE, borderRadius: 6, borderSkipped: false },
-      { label: "Actual", data: actual, backgroundColor: actual.map((a, i) => (a >= plan[i] ? GREEN : RED)), borderRadius: 6, borderSkipped: false },
-    ] },
-    options: { plugins: { legend: { position: "top", align: "end", ...LEGEND } },
-      scales: { x: { ...AXIS, grid: { display: false }, ticks: { ...AXIS.ticks, maxRotation: 0 } }, y: { ...AXIS, beginAtZero: true, ticks: { ...AXIS.ticks, callback: (v) => short(Number(v), f) } } } },
-  };
-}
-function lineCfg(labels: string[], plan: number[], actual: number[], f: Fmt, cost = false): ChartConfiguration {
-  const above = cost ? RED : GREEN, below = cost ? GREEN : RED;
-  return {
-    type: "line",
-    data: { labels, datasets: [
-      { label: "Actual", data: actual, borderColor: "#1a1d23", borderWidth: 3, tension: 0.4, pointRadius: 0, fill: { target: 1, above: above + "40", below: below + "40" } },
-      { label: "Expected", data: plan, borderColor: PLAN, borderWidth: 2, borderDash: [6, 6], tension: 0.4, pointRadius: 0, fill: false },
-    ] },
-    options: { plugins: { legend: { position: "top", align: "end", ...LEGEND } },
-      scales: { x: { ...AXIS, grid: { display: false } }, y: { ...AXIS, ticks: { ...AXIS.ticks, callback: (v) => short(Number(v), f) } } } },
-  };
-}
-function donutCfg(labels: string[], values: number[], colors: string[]): ChartConfiguration {
-  return { type: "doughnut", data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: "#fff", borderWidth: 3 }] },
-    options: { cutout: "62%", plugins: { legend: { position: "right", ...LEGEND } } } as ChartConfiguration["options"] };
-}
-
 /* ---------- main ---------- */
-/** Landscape A3 PDF: overview with charts on page 1, then one page per selected country. */
+/** Landscape A3 PDF: overview on page 1, then one page per selected country. Tables and text only. */
 export async function buildReport(inp: ReportInput): Promise<jsPDF> {
   const { agg, period, chan, enabled, cal, hist, months } = inp;
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a3" });
@@ -91,8 +38,6 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
   const stamp = "Marketing Dashboard - Plan vs Reality · " + period.label + " · " + chanLabel;
   const countries = COUNTRIES.filter((c) => enabled.has(c));
   const flags = new Map<string, string | null>(await Promise.all(countries.map(async (c) => [c, await flagData(c)] as const)));
-  // Month grids are built once and reused by the overview and every country page.
-  const monthGrids = months.map((mo) => ({ l: mo.label.replace(" MTD", "*"), G: buildGrid(mo.agg, mo, chan, enabled) }));
   const yieldUI = () => new Promise((r) => setTimeout(r, 0));
 
   const heading = (title: string, sub?: string, flag?: string | null) => {
@@ -171,28 +116,8 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
       doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...TEXT[s]); doc.text(d, x + cw - 8, cy + 26, { align: "right" });
     });
 
-    // Charts row: funded by country (bars), spend by avenue (donut), spend trend (line)
-    const y0 = cy + ch + GAP + 4;
-    const colW = (W - 2 * M - 2 * GAP) / 3, chartH = 70;
-    const byC = G.groups.filter((g) => !g.tot && g.name !== "Other");
-    const avenues = CHANNEL_NAMES.map((ch) => ({ name: ch.replace(" / Google Search", ""), v: sumBuckets(...countries.map((c) => agg[ch]?.[c])).Spend })).filter((r) => r.v > 0).sort((a, b) => b.v - a.v);
-    const monthSeries = monthGrids.map(({ l, G: mg }) => { const t = mg.groups.find((x) => x.tot) ?? mg.groups[0]; return { l, a: t?.act.Spend || 0, p: t?.pl.Spend || 0 }; });
-    const [img1, img2, img3] = await Promise.all([
-      chartPng(barCfg(byC.map((g) => g.name), byC.map((g) => g.pl.FundedAccounts), byC.map((g) => g.act.FundedAccounts), "n"), 1100, 560),
-      chartPng(donutCfg(avenues.map((a) => a.name), avenues.map((a) => a.v), PALETTE), 1100, 560),
-      chartPng(lineCfg(monthSeries.map((m) => m.l), monthSeries.map((m) => m.p), monthSeries.map((m) => m.a), "$0"), 1100, 560),
-    ]);
-    const chartBox = (x: number, title: string, sub: string, img: string) => {
-      doc.setFillColor(255, 255, 255); doc.setDrawColor(...LINE); doc.roundedRect(x, y0, colW, chartH + 16, 2.5, 2.5, "FD");
-      sectionTitle(title, x + 5, y0 + 8); doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(...INK3); doc.text(sub, x + 5 + doc.getTextWidth(title) * 1.15 + 2, y0 + 8);
-      doc.addImage(img, "PNG", x + 4, y0 + 12, colW - 8, chartH);
-    };
-    chartBox(M, "Funded accounts by country", "actual vs expected", img1);
-    chartBox(M + colW + GAP, "Spend by avenue", "selected countries", img2);
-    chartBox(M + 2 * (colW + GAP), "Spend, last 12 months", "* current month to date; months before Aug 2026 illustrative", img3);
-
     // Totals table (left) and recommendation lists (right)
-    const y1 = y0 + chartH + 16 + GAP + 2;
+    const y1 = cy + ch + GAP + 4;
     const { rows, statuses } = metricRows(tot.act as unknown as Record<string, number>, tot.pl as unknown as Record<string, number>, tot.act.Spend > 0);
     metricTable(y1, "All selected countries", rows, statuses, M, W / 2 + GAP / 2);
     const rx = W / 2 + GAP / 2;
@@ -225,18 +150,8 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
     metricTable(40, "Metric", rows, statuses, M, W - M - half);
 
     const rx = M + half + GAP, rw = half;
-    // Country trend charts: spend and funded accounts, last 12 months
     await yieldUI(); // keep the page responsive between country pages
-    const ms = monthGrids.map(({ l, G: mg }) => { const cg = mg.groups.find((x) => x.name === c); return { l, sa: cg?.act.Spend || 0, sp: cg?.pl.Spend || 0, fa: cg?.act.FundedAccounts || 0, fp: cg?.pl.FundedAccounts || 0 }; });
-    const [t1, t2] = await Promise.all([
-      chartPng(lineCfg(ms.map((m) => m.l), ms.map((m) => m.sp), ms.map((m) => m.sa), "$0"), 900, 420),
-      chartPng(lineCfg(ms.map((m) => m.l), ms.map((m) => m.fp), ms.map((m) => m.fa), "n"), 900, 420),
-    ]);
-    const cwid = (rw - GAP) / 2, chh = cwid * 420 / 900;
     let y = 40;
-    sectionTitle("Spend, last 12 months", rx, y + 5); sectionTitle("Funded accounts, last 12 months", rx + cwid + GAP, y + 5);
-    doc.addImage(t1, "PNG", rx, y + 9, cwid, chh); doc.addImage(t2, "PNG", rx + cwid + GAP, y + 9, cwid, chh);
-    y += 9 + chh + GAP + 2;
 
     // Recommendations for this country
     const mine = recs.filter((r) => r.c === c && (chan === ALLCH || r.chan === chan));
