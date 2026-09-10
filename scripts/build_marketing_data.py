@@ -26,10 +26,18 @@ ROOT = Path(__file__).resolve().parent.parent
 DL = Path("/Users/aishwaryanathani/Downloads")
 OUT = ROOT / "src" / "data" / "marketing-data.json"
 
+# The *_ALL_SOURCE_OF_TRUTH workbooks supersede the earlier SourceOfTruth exports: same tabs, but
+# 14 columns carrying the volume counts (clicks, leads, live accounts, funded accounts) plus NMI
+# and ROI, so every rate can be blended correctly instead of read off a row.
 SOT = [
-    ("aug", "August 2026", "2026-08-01", "2026-08-31", "Aug-Social_and_PPC-SourceOfTruth (1).xlsx"),
-    ("sep", "1-9 September 2026", "2026-09-01", "2026-09-09", "Sept-Social_and_PPC-SourceOfTruth.xlsx"),
+    ("aug", "August 2026", "2026-08-01", "2026-08-31", "AUG_ALL_SOURCE_OF_TRUTH (1).xlsx"),
+    ("sep", "September 2026", "2026-09-01", None, "SEPT_ALL_SOURCE_OF_TRUTH (1).xlsx"),
 ]
+# Column order of the PPC / Social tabs and of each block on the Overview tab.
+COLS = ["Country", "Spend", "Clicks", "CPC", "Leads", "CPL", "LiveAccounts", "CPA",
+        "FundedAccounts", "CPFA", "AvgAccountSize", "Redeposit", "TotalNMI", "ROI"]
+# Overview blocks start at A, P and AE.
+BLOCKS = (0, 15, 30)
 EXPECTED = "Aug&Sept-ExpectedNumbers.xlsx"
 BUDGET = "Lead_Distribution_Marketing_Budget_10-09-2026.xlsx"  # September plan
 # The Sept plan spells this market out; every other file and the app say KSA. Keyed as KSA
@@ -72,28 +80,113 @@ def rates(r):
     }
 
 
+def _block(row, off):
+    """One 14-column block of a row, keyed by COLS. Country stays text; the rest go through num()."""
+    vals = row[off:off + len(COLS)]
+    out = {"country": vals[0]}
+    for k, v in zip(COLS[1:], vals[1:]):
+        out[k] = num(v)
+    return out
+
+
 def build_actuals():
     out = []
     for pid, label, frm, to, fname in SOT:
         wb = openpyxl.load_workbook(DL / fname, data_only=True)
         rows, totals = [], {}
-        has_nmi = None
         for tab, platform in (("PPC", PLATFORM["PPC"]), ("Social", PLATFORM["Social"])):
-            recs = rows_of(wb[tab])
-            has_nmi = any(r.get("Total NMI $") is not None for r in recs)
-            for r in recs:
-                entry = {"country": r["Country"], "platform": platform,
-                         "Spend": num(r.get("Spent $")), **rates(r)}
-                if r["Country"] == "Total":
-                    totals[platform] = {k: v for k, v in entry.items() if k not in ("country", "platform")}
+            for r in wb[tab].iter_rows(min_row=2, values_only=True):
+                if not r[0]:
+                    continue
+                b = _block(r, 0)
+                name = b.pop("country")
+                if name == "Total":
+                    totals[platform] = b
                 else:
-                    rows.append(entry)
+                    rows.append({"country": name, "platform": platform, **b})
+
+        # The Overview tab carries a third block combining the two channels. Its banner row names
+        # each block, and the order is not the same in both workbooks, so read it rather than assume.
+        ws = wb["Overview"]
+        grid = list(ws.iter_rows(values_only=True))
+        banner = {grid[0][o]: o for o in BLOCKS if grid[0][o]}
+        combined_off = banner.get("TOTALS")
+        overview, ov_total = [], None
+        for r in grid[3:]:
+            if not r[combined_off]:
+                continue
+            b = _block(r, combined_off)
+            name = b.pop("country")
+            if name == "Total":
+                ov_total = b
+            else:
+                overview.append({"country": name, **b})
+
+        # Two cells the workbook never finishes: "Average Account Size" is the literal text
+        # FORMULA?? in both files, and the Sept Overview has no CPFA formula at all. Fill them with
+        # the same method the workbook uses for every other blended rate - sum the volumes, then
+        # divide - and keep them OUT of the as-stated block so provenance stays clear.
+        def blended_avg(a, b):
+            fa, fb = (a.get("FundedAccounts") or 0), (b.get("FundedAccounts") or 0)
+            if fa + fb == 0:
+                return None
+            return ((a.get("AvgAccountSize") or 0) * fa + (b.get("AvgAccountSize") or 0) * fb) / (fa + fb)
+
+        by_ctry = {}
+        for r in rows:
+            by_ctry.setdefault(r["country"], {})[r["platform"]] = r
+        gaps_by_country = []
+        for o in overview:
+            pair = by_ctry.get(o["country"], {})
+            a = pair.get(PLATFORM["PPC"], {}); b = pair.get(PLATFORM["Social"], {})
+            gaps_by_country.append({
+                "country": o["country"],
+                "AvgAccountSize": blended_avg(a, b),
+                "CPFA": (o["Spend"] / o["FundedAccounts"]) if o.get("FundedAccounts") else None,
+            })
+        # Flag as-stated overview rates that disagree with the correct blend, rather than sniffing
+        # the formula text: this clears itself when the workbook is fixed and catches any cause
+        # (unfinished cell, misaligned row reference, stale cached value).
+        def off_by(stated, correct):
+            if correct is None:
+                return False
+            if stated is None:
+                return True
+            tol = max(0.01, abs(correct) * 1e-6)   # tolerant of the 2dp copies the Overview keeps
+            return abs(stated - correct) > tol
+
+        suspect = []
+        for field in ("AvgAccountSize", "CPFA"):
+            wrong = [o["country"] for o, g in zip(overview, gaps_by_country) if off_by(o.get(field), g[field])]
+            if wrong:
+                suspect.append({"field": field, "rowsAffected": len(wrong),
+                                "examples": wrong[:5],
+                                "why": "as-stated value does not equal the correct blend for its own row; use overview.corrected"})
+
+        gaps_total = {
+            "AvgAccountSize": blended_avg(totals.get(PLATFORM["PPC"], {}), totals.get(PLATFORM["Social"], {})),
+            "CPFA": (ov_total["Spend"] / ov_total["FundedAccounts"]) if ov_total and ov_total.get("FundedAccounts") else None,
+        }
+
         out.append({
             "id": pid, "label": label, "from": frm, "to": to, "source": [fname],
-            "reports": "rates and spend only; this workbook has no NMI or ROI column" if not has_nmi
-                       else "rates, spend, deposits and ROI",
-            "volumes": None,  # clicks / leads / accounts / funded are not stated in this workbook
-            "rows": rows, "totals": totals,
+            "reports": "spend, volume counts, every unit cost, re-deposits, NMI and ROI",
+            "blocksOnOverviewTab": list(banner),
+            "rows": rows,
+            "totals": totals,
+            "overview": {
+                "what": "the workbook's own TOTALS block: PPC + Social combined, per country and overall",
+                "byCountry": overview,
+                "total": ov_total,
+                "suspect": suspect,
+                "corrected": {
+                    "what": "NOT from a cell. Computed here the same way the workbook computes its other blended rates. Use in place of the as-stated fields listed in overview.suspect.",
+                    "AvgAccountSize": "sum(AvgAccountSize x FundedAccounts) / sum(FundedAccounts) across the two channels",
+                    "CPFA": "combined Spend / combined FundedAccounts",
+                    "byCountry": gaps_by_country,
+                    "total": gaps_total,
+                },
+            },
         })
     return out
 
@@ -240,10 +333,26 @@ def main():
             "In the plan workbook PPC = Google Search/Bing/Display/Others and SOC = Facebook & Instagram/TikTok/Social Boosting Posts, a wider grouping than the SourceOfTruth tabs.",
             "The Overview tabs are ignored; they are computed from the PPC and Social tabs and the Sept Overview disagrees with its own Social tab on the sign of Jordan's NMI.",
         ],
+        "audit": [
+            "Audited against AUG_ALL_SOURCE_OF_TRUTH (1).xlsx and SEPT_ALL_SOURCE_OF_TRUTH (1).xlsx as modified 2026-09-10 20:13.",
+            "CORRECT - per-row rates hold on every row with a non-zero denominator: CPC=Spend/Clicks, CPL=Spend/Leads, CPA=Spend/Live, CPFA=Spend/Funded, ROI=NMI/Spend. Aug PPC, Aug Social and Sept PPC are clean on all of them.",
+            "CORRECT - volumes are additive and each tab's Total row equals the sum of its countries, except Sept Social NMI (see the Jordan entry).",
+            "CORRECT - every Total row recomputes its rates from the totals instead of summing the rate columns.",
+            "CORRECT - the Overview TOTALS block blends properly: sums the volumes, then divides. The earlier SourceOfTruth exports summed the rate columns instead, which inflated combined ROI by 70% and combined CPL by about 109%.",
+            "CONFIRMED - Average Account Size uses Funded Accounts as its denominator; the funded-weighted country average reproduces each tab's Total row exactly in all four tabs.",
+            "FIXED - the Aug Overview Average Account Size is now a real formula, =IFERROR((K4*I4+Z4*X4)/(I4+X4),0), aligned to its own row. It was the literal text FORMULA?? in the two previous uploads.",
+            "FIXED - the Sept Overview Average Account Size row misalignment is gone. The previous upload had AO4 reading row 5 and the Total reading row 38 (past the data), so every country showed the next country's blend; all 34 rows now match the correct blend for their own row.",
+            "FIXED - the Sept Overview CPFA formula is present.",
+            "FIXED - Aug PPC, Other: CPFA now reads 56.0 against $56 of spend and 1 funded account. It was 0.",
+            "OPEN - Sept Social, Jordan: Total NMI is stated +20,458.14 but its own ROI of -14.8661 against $1,376.16 of spend implies -20,458.13. Flipping the sign makes the country rows reconcile exactly to the stated Total of 47,026.71, so the sign is the error and the Total row is right. As loaded, Sept Social country NMI sums to 87,942.99, exceeding the Total row by 40,916.28 = 2x Jordan. Across the last three uploads this cell has only changed from text to number; the sign is unchanged.",
+            "OPEN - the Sept Social tab still stores its rates pre-rounded as text ('$11', '$44', '$0.93'), 223 such cells, while every other tab now carries full precision. Twelve CPL and CPA rows therefore differ from Spend/Leads and Spend/Live in the second decimal, and its Total CPC reads 0.93 against a true 0.929677. Values only, not a logic fault.",
+            "MINOR - the Aug Overview keeps a 2dp copy of the Social block's Average Account Size total (668.79 against the tab's 668.7901409), so its blended figure reads 1,116.53674 where full precision gives 1,116.53679. A 0.00005 rounding artifact.",
+            "OPEN - neither workbook states a reporting window anywhere. August matches the earlier full-month export exactly ($276,488.18 PPC). September spans more days than the 1-9 Sept export (PPC $127,030.33 -> $139,334.39) but the end date is not in the file, so actuals[sep].to is null pending confirmation.",
+        ],
         "sources": [
             {"file": f, "window": w} for f, w in [
-                ("Aug-Social_and_PPC-SourceOfTruth (1).xlsx", "1-31 Aug 2026"),
-                ("Sept-Social_and_PPC-SourceOfTruth.xlsx", "1-9 Sept 2026"),
+                ("AUG_ALL_SOURCE_OF_TRUTH.xlsx", "1-31 Aug 2026"),
+                ("SEPT_ALL_SOURCE_OF_TRUTH.xlsx", "September 2026, end date not stated in the workbook"),
                 ("Aug&Sept-ExpectedNumbers.xlsx", "plan: full-month Aug 2026; actual: 1-26 Aug 2026"),
                 ("Lead_Distribution_Marketing_Budget_10-09-2026.xlsx", "plan: full-month Sept 2026"),
             ]
@@ -268,6 +377,8 @@ def main():
     n_act = sum(len(p["rows"]) for p in doc["actuals"])
     print(f"wrote {OUT}")
     print(f"  actual periods : {[p['id'] for p in doc['actuals']]}  ({n_act} country-platform rows)")
+    for pp in doc["actuals"]:
+        print(f"     {pp['id']}: {len(pp['rows'])} rows, totals {list(pp['totals'])}, overview {len(pp['overview']['byCountry'])} countries")
     sep = doc["plans"]["sep"]
     print(f"  aug plan       : {len(plan_inputs)} countries, {len(assumptions)} levers, expected channels {list(expected)}")
     print(f"  sep plan       : {len(sep['byCountry'])} countries, {len(sep['byRegion'])} regions, budget ${sep['totals']['Combined']['Budget']:,.0f} (no people data)")
