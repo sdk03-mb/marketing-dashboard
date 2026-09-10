@@ -47,7 +47,7 @@ function ramp(t: number) {
 }
 
 const W = 1500, H = 720;
-const LW = 192, LH = 34;            // label box size
+const LW = 204, LH = 34;            // label box size
 const BAND_X = LW + 22, BAND_Y = LH + 26; // map inset so the four label bands stay clear of the map
 
 /** World map (Natural Earth projection): markets filled by ROI on a colour scale, labels for the significant ones. */
@@ -78,7 +78,7 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
     // Labels sit in four bands around the map (top, bottom, left, right), chosen by direction from the map centre,
     // spread evenly along each band, with a light leader line back to the country.
     type Side = "t" | "b" | "l" | "r";
-    type L = { key: string; name: string; cx: number; cy: number; x: number; y: number; roi: string; fill: string; side: Side };
+    type L = { key: string; name: string; cx: number; cy: number; x: number; y: number; avg: string; fill: string; side: Side };
     // Only the significant markets get a label: the best payers (ROI at or above 100%) and the biggest
     // spenders with a poor return (ROI under 50%), so the bands never crowd.
     const all = fs.flatMap((f) => {
@@ -100,7 +100,7 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
         : [dy < 0 ? "t" : "b", dx < 0 ? "l" : "r", dx < 0 ? "r" : "l", dy < 0 ? "b" : "t"];
       const side = order.find((s) => used[s] < cap[s]) ?? "b";
       used[side]++;
-      return { key: name, name, cx, cy, side, roi: fmt(g.act.ROI, "pct"), fill: ramp(t(g)) };
+      return { key: name, name, cx, cy, side, avg: g.act.FundedAccounts > 0 ? money(g.act.CPFA) : "$0", fill: ramp(t(g)) };
     });
     const labels: L[] = [];
     const spread = (n: number, from: number, to: number, i: number) => (n <= 1 ? (from + to) / 2 : from + ((to - from) * i) / (n - 1));
@@ -135,6 +135,7 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
               <rect x={x0} y={y0} width={5} height={LH} rx={2} fill={l.fill} />
               {ISO[l.name] && <image href={`https://flagcdn.com/w80/${ISO[l.name]}.png`} x={x0 + 12} y={l.y - 7} width={20} height={14} preserveAspectRatio="none" />}
               <text x={x0 + 38} y={l.y + 5} className="rmn">{l.name}</text>
+              <text x={x0 + LW - 10} y={l.y + 5} textAnchor="end" className="rmv"><tspan className="rmr">CPFA </tspan>{l.avg}</text>
             </g>
           );
         })}

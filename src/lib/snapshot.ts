@@ -1,6 +1,6 @@
 // Snapshot of the Power BI query result per quick-range period, copied verbatim from
 // aish_marketing/MB_Marketing_Dashboard2/index.html (const SNAPSHOT), taken 8 September 2026.
-// Keys: mtd, prev, day, wk. Used when the live MCP connection is unavailable.
+// Keys: mtd, day, wk (last month comes from src/data/sheets.json). Used when the live MCP connection is unavailable.
 // Regenerate from index.html rather than editing rows by hand.
 
 export const SNAPSHOT_DATE = "8 September 2026";
@@ -94,86 +94,7 @@ const MTD: Raw[] = [
   ["Australia", "Google Search", 14240.376081, 1078, 71, 17, 3, 24051.4031422, 23117.4361422],
 ];
 
-const PREV: Raw[] = [
-  ["Other", "Facebook & Instagram", 0, 29, 17, 9, 4, 177969.2097524524, 175199.3297524524],
-  ["Other", "LinkedIn", 0, 2, 0, 0, 0, 22254.54, 22254.54],
-  ["Other", "TikTok", 0, 0, 0, 0, 0, 11715.78, 11715.78],
-  ["Other", "Google Display", 0, 0, 0, 0, 0, 3204.81, 3204.81],
-  ["Other", "Bing Search", 0, 0, 0, 0, 0, 1483.62, 1483.62],
-  ["Other", "Google Ads", 0, 0, 0, 0, 0, 9770.89, 9770.89],
-  ["Other", "Apple Search", 0, 0, 0, 0, 0, 5435.06, 5435.06],
-  ["Other", "Google Others", 0, 0, 0, 0, 1, 50, 0],
-  ["Canada", "Google Others", 0, 0, 0, 0, 0, 50, 50],
-  ["KSA", "Apple Search", 0, 0, 0, 0, 0, 210, 210],
-  ["UAE", "TikTok", 0, 0, 0, 0, 0, 2550, 2550],
-  ["UAE", "Google Display", 0, 0, 0, 0, 0, 500, 500],
-  ["UAE", "Google Discovery", 0, 0, 0, 0, 1, 103.4, 0],
-  ["UAE", "Google Ads", 0, 0, 0, 0, 2, 2899.16, 2689.16],
-  ["Colombia", "Facebook & Instagram", 0, 0, 0, 0, 1, 100, 0],
-  ["Colombia", "Google Search", 0, 0, 0, 0, 0, 200, 200],
-  ["Russia", "Google Search", 0, 0, 0, 0, 0, 1045.014, 1045.014],
-  ["France", "Google Search", 0, 0, 0, 0, 0, 2836.16078, 2836.16078],
-  ["Italy", "Google Search", 0, 0, 0, 0, 0, 57.893, 57.893],
-  ["Australia", "Google Ads", 0, 0, 0, 0, 0, 3458, 3458],
-  ["Argentina", "Google Search", 0, 0, 1, 1, 1, 77981.29, 75980],
-  ["Spain", "Google Ads", 0, 0, 1, 1, 0, 2847.74, 2847.74],
-  ["France", "Google Ads", 0, 0, 1, 1, 0, 450, 450],
-  ["Chile", "Google Ads", 0, 0, 1, 0, 0, 0, 0],
-  ["Spain", "Google Others", 0, 0, 9, 2, 0, 0, 0],
-  ["Germany", "Google Ads", 0, 0, 3, 1, 2, 994.57, 703.36],
-  ["Other", "Google Search", 56, 2, 1, 0, 0, 209002.4265686111, 209002.4265686111],
-  ["Argentina", "Facebook & Instagram", 754.739999, 1295, 91, 10, 0, 39748.03, 39748.03],
-  ["KSA", "Facebook & Instagram", 24074.069998, 34856, 190, 72, 1, 835, 635],
-  ["KSA", "Google Search", 31486.119936, 5947, 297, 126, 0, 81253.48, 81253.48],
-  ["UAE", "Facebook & Instagram", 18292.059997, 9644, 80, 40, 2, 82381.18, 82280.18],
-  ["UAE", "Google Search", 50163.235882, 5736, 225, 96, 18, 1114145.5837414963, 1047440.1237414964],
-  ["UAE", "Bing Search", 637.97, 154, 6, 5, 0, 384.69, 384.69],
-  ["Qatar", "Facebook & Instagram", 3633.49, 4242, 33, 14, 0, 0, 0],
-  ["Qatar", "Google Search", 10512.27477, 1678, 142, 51, 1, 108.388, 50],
-  ["Oman", "Facebook & Instagram", 3158.36, 3982, 45, 12, 1, 600, 50],
-  ["Oman", "Google Search", 6997.721627, 996, 61, 18, 0, 0, 0],
-  ["Pakistan", "Facebook & Instagram", 11787.639999, 38505, 566, 198, 0, 0, 0],
-  ["Pakistan", "Google Search", 5425.210492, 3936, 503, 137, 0, 0, 0],
-  ["Canada", "Facebook & Instagram", 9488.509998, 2288, 87, 32, 1, 2836.2920582797, 925.7134156038],
-  ["Canada", "Google Search", 21398.791135, 1178, 83, 33, 8, 45339.3246146196, 44574.2595369047],
-  ["Brazil", "Facebook & Instagram", 977.199998, 894, 87, 17, 1, 50, 0],
-  ["Spain", "Facebook & Instagram", 7829.089997, 2759, 87, 35, 1, 217.2792154, 57.3071434],
-  ["Spain", "Google Search", 16227.524153, 2434, 199, 61, 2, 42878.96633, 41262.96633],
-  ["Switzerland", "Facebook & Instagram", 3796.699998, 586, 24, 10, 0, 0, 0],
-  ["Switzerland", "Google Search", 10937.149516, 1029, 34, 7, 1, 6053.5547036865, 5853.5547036865],
-  ["Netherlands", "Facebook & Instagram", 5204.089999, 960, 38, 12, 0, 0, 0],
-  ["Netherlands", "Google Search", 6552.635796, 715, 29, 12, 1, 350.298, 0],
-  ["Germany", "Facebook & Instagram", 6648.6, 1173, 68, 29, 0, 4183.739, 4183.739],
-  ["Germany", "Google Search", 25921.777955, 3740, 164, 56, 8, 19568.1978229, 16121.8574229],
-  ["Chile", "Facebook & Instagram", 758.19, 804, 44, 18, 0, 0, 0],
-  ["Turkey", "Facebook & Instagram", 8510.409998, 5399, 107, 35, 2, 6720.23, 0],
-  ["Turkey", "Google Search", 4506.604881, 2545, 8, 1, 0, 0, 0],
-  ["Mexico", "Facebook & Instagram", 766.999999, 678, 72, 14, 0, 0, 0],
-  ["India", "Google Search", 7167.263677, 1627, 85, 19, 1, 100, 0],
-  ["Sweden", "Facebook & Instagram", 4148.679999, 884, 17, 7, 0, 0, 0],
-  ["Sweden", "Google Search", 6753.701516, 744, 30, 8, 0, 0, 0],
-  ["Poland", "Facebook & Instagram", 5221.94, 1411, 55, 25, 0, 0, 0],
-  ["Poland", "Google Search", 7094.403127, 1183, 23, 5, 0, 0, 0],
-  ["Ireland", "Facebook & Instagram", 1704.55, 575, 15, 4, 0, 0, 0],
-  ["Greece", "Facebook & Instagram", 7995.659999, 4401, 62, 19, 0, 0, 0],
-  ["Greece", "Google Search", 7173.754076, 1254, 48, 18, 0, 0, 0],
-  ["Iraq", "Facebook & Instagram", 1050.32, 3010, 66, 21, 0, 0, 0],
-  ["Jordan", "Facebook & Instagram", 4336.349999, 7799, 91, 45, 8, 15304.41, 7028.12],
-  ["Lebanon", "Facebook & Instagram", 3759.169998, 5614, 83, 37, 2, 953.72, 0],
-  ["Morocco", "Facebook & Instagram", 6319.87, 28822, 566, 176, 8, 1485.74, 0],
-  ["Morocco", "Google Search", 14344.154237, 2461, 239, 71, 0, 0, 0],
-  ["Tunisia", "Facebook & Instagram", 6532.959997, 31874, 238, 77, 2, 282.06, 0],
-  ["Tunisia", "Google Search", 14280.445893, 1168, 64, 23, 1, 50, 0],
-  ["Peru", "Facebook & Instagram", 740.67, 1104, 61, 16, 0, 0, 0],
-  ["Kazakhstan", "Facebook & Instagram", 8609.29, 2966, 78, 23, 0, 0, 0],
-  ["Kazakhstan", "Google Search", 4329.863551, 371, 43, 9, 0, 0, 0],
-  ["Norway", "Facebook & Instagram", 5285.889999, 973, 26, 6, 0, 0, 0],
-  ["Norway", "Google Search", 6753.063566, 342, 14, 4, 0, 0, 0],
-  ["Syria", "Facebook & Instagram", 1288.75, 9405, 436, 172, 1, 50.46, 0],
-  ["Australia", "Facebook & Instagram", 2396.09, 509, 34, 15, 2, 1525.626, 390.3215],
-  ["Australia", "Google Search", 17768.509628, 1207, 74, 31, 10, 67308.5677616, 61930.2593616],
-  ["UAE", "YouTube", 0, 0, 0, 1, 0, 7538, 7538],
-];
+// August 2026 (last month) moved to src/data/sheets.json, period "aug".
 
 const DAY: Raw[] = [
   ["Other", "Facebook & Instagram", 0, 0, 0, 0, 0, 2094.7, 2094.7],
@@ -295,5 +216,5 @@ const WK: Raw[] = [
 ];
 
 export const SNAPSHOT: Record<string, Row[]> = {
-  mtd: MTD.map(r), prev: PREV.map(r), day: DAY.map(r), wk: WK.map(r),
+  mtd: MTD.map(r), day: DAY.map(r), wk: WK.map(r),
 };

@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import {
-  METRICS, hasLive, hasSnapshot, iso, loadPeriod, makeCal, monthPeriods, periodFor, setRedeposits, stripRedeposits,
+  METRICS, hasData, hasLive, iso, loadPeriod, makeCal, monthPeriods, periodFor, setRedeposits, stripRedeposits,
   type Agg, type Cal, type Hist, type MonthData, type Period,
 } from "@/lib/engine";
 import { ALLCH, CHANNEL_NAMES, COUNTRIES } from "@/lib/plan";
@@ -82,7 +82,7 @@ export function Dashboard() {
     const prev = cal.periods.find((x) => x.id === "prev")!, mtd = cal.periods.find((x) => x.id === "mtd")!;
     const c = cache.current;
     const quick = (m: Period): Promise<Agg | null> =>
-      hasSnapshot(m.id) || c[m.id] ? loadPeriod(m, c) : hasLive() ? loadPeriod(m, c).catch(() => null) : Promise.resolve(null);
+      hasData(m) || c[m.id] ? loadPeriod(m, c) : hasLive() ? loadPeriod(m, c).catch(() => null) : Promise.resolve(null);
     (async () => {
       const [agg, prevA, mtdA] = await Promise.all([loadPeriod(period, c), loadPeriod(prev, c), loadPeriod(mtd, c)]);
       // Up to 12 months, only where the snapshot or the live query has data; no placeholders.

@@ -425,7 +425,7 @@ table.mt { width: 100%; border-collapse: collapse; font-size: 12.5px; background
 .rhead { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #6e6e6e; padding-bottom: 14px; border-bottom: 1px solid #e6e6e6; }
 .rhead .logo { height: 26px; }
 .rdate { font-size: 13px; font-weight: 600; color: #2e75b6; background: #e9f0f8; border-left: 3px solid #2e75b6; padding: 5px 12px; border-radius: 0 6px 6px 0; }
-.rtitle { font-size: 48px; line-height: 1.02; font-weight: 800; letter-spacing: -0.01em; text-transform: uppercase; color: #2e75b6; margin: 6px 0 14px; }
+.rtitle { font-family: Verdana, Geneva, "DejaVu Sans", sans-serif; font-size: 44px; line-height: 1.05; font-weight: 700; letter-spacing: -0.01em; text-transform: capitalize; color: #2e75b6; margin: 6px 0 14px; }
 .rtitle.sm { font-size: 32px; }
 .rsub { font-size: 12px; color: #6e6e6e; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid #e6e6e6; padding-bottom: 10px; }
 .rrow1 { display: grid; grid-template-columns: 250px 1fr 1fr; gap: 28px; }
@@ -620,27 +620,22 @@ table.ht { width: 100%; border-collapse: collapse; font-size: 13px; }
 
 /* ---------- spend vs return map (recommendations by market) ---------- */
 .quad { display: flex; flex-direction: column; gap: 6px; }
-.quad-plot { position: relative; margin: 0 8px 22px 62px; border: 1px solid #dfe3ea; border-radius: 6px; overflow: visible; background: #fff; }
+.quad-plot { position: relative; margin: 0 8px 26px 78px; border: 1px solid #dfe3ea; border-left: 2px solid #1a1d23; border-bottom: 2px solid #1a1d23; border-radius: 0; overflow: visible; background: #fff; }
 .quad-zone { position: absolute; left: 0; right: 0; }
 .quad-zone.z-stop { background: #fdf0f2; } .quad-zone.z-fix { background: #fef8e6; } .quad-zone.z-grow { background: #eefaf2; }
 .quad-zone + .quad-zone { border-top: 1px dashed #b9c0cc; }
-.quad-zone span { position: absolute; right: 10px; top: 6px; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; opacity: .55; }
+.quad-zone span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 30px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; opacity: .16; white-space: nowrap; pointer-events: none; }
 .quad-zone.z-stop span { color: #9f1d28; } .quad-zone.z-fix span { color: #8a5200; } .quad-zone.z-grow span { color: #146b34; }
-.quad-lane { position: absolute; left: 0; right: 0; bottom: 0; border-top: 1px dashed #b9c0cc; }
-.quad-lane span { position: absolute; right: 10px; top: 4px; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: #9f1d28; opacity: .7; white-space: nowrap; }
-.quad-dot.nofund { border-style: dashed; }
-.quad-early { position: absolute; top: 0; bottom: 0; left: 0; background: repeating-linear-gradient(135deg, rgba(120,126,138,.10) 0 6px, transparent 6px 14px); border-right: 1px dashed #9aa1ad; }
-.quad-early span { position: absolute; left: 8px; top: 6px; font-size: 10px; color: #6e6e6e; max-width: calc(100% - 16px); line-height: 1.3; }
-.quad-xt { position: absolute; bottom: -18px; transform: translateX(-50%); font-size: 10px; color: #6e6e6e; font-variant-numeric: tabular-nums; }
-.quad-yt { position: absolute; left: -8px; transform: translate(-100%, -50%); font-size: 10px; color: #6e6e6e; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.quad-dot { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid; box-shadow: 0 1px 4px rgba(0,0,0,.15); background: #fff; }
-.quad-dot.z-stop { border-color: #dc2626; background: #fbe4e7; } .quad-dot.z-fix { border-color: #d97706; background: #fdf1cf; } .quad-dot.z-grow { border-color: #16a34a; background: #e4f4ea; } .quad-dot.z-early { border-color: #9aa1ad; background: #eef0f3; opacity: .8; }
-.quad-dot { overflow: hidden; }
-.quad-dot .flag { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 25% center; }
-.quad-lab { position: absolute; height: 13px; line-height: 13px; font-size: 10px; font-weight: 600; color: #1a1d23; text-align: center; white-space: nowrap; text-shadow: 0 0 3px #fff, 0 0 3px #fff; pointer-events: none; }
+.quad-lane { position: absolute; left: 0; right: 0; bottom: 0; border-top: 1px dashed #b9c0cc; background: #fff; }
+.quad-lane span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 22px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #6e6e6e; opacity: .18; white-space: nowrap; pointer-events: none; }
+.quad-xt { position: absolute; bottom: -20px; transform: translateX(-50%); font-size: 12px; font-weight: 700; color: #1a1d23; font-variant-numeric: tabular-nums; }
+.quad-yt { position: absolute; left: -10px; transform: translate(-100%, -50%); font-size: 12px; font-weight: 700; color: #1a1d23; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.quad-dot { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.25); z-index: 2; }
+.quad-dot.z-stop { background: #dc2626; } .quad-dot.z-fix { background: #d97706; } .quad-dot.z-grow { background: #16a34a; } .quad-dot.z-early { background: #9aa1ad; }
+.quad-lab { position: absolute; height: 15px; line-height: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 10px; font-weight: 600; color: #1a1d23; text-align: center; white-space: nowrap; text-shadow: 0 0 3px #fff, 0 0 3px #fff; pointer-events: none; }
 .quad-lab.lead { background: rgba(255,255,255,.85); border-radius: 3px; }
-.quad-leads { position: absolute; inset: 0; pointer-events: none; } .quad-leads line { stroke: #6e6e6e; stroke-width: 1; }
-.quad-axes { display: flex; gap: 18px; justify-content: center; font-size: 10.5px; color: #6e6e6e; margin-top: 6px; }
+.quad-leads { position: absolute; inset: 0; pointer-events: none; } .quad-leads line { stroke: #dfe3ea; stroke-width: 1; }
+.quad-axes { display: flex; gap: 18px; justify-content: center; font-size: 10.5px; color: #6e6e6e; margin-top: 26px; }
 
 /* ---------- budget shift board (AI recommendations) ---------- */
 .bs { display: flex; flex-direction: column; gap: 18px; }
@@ -853,3 +848,50 @@ table.ht { width: 100%; border-collapse: collapse; font-size: 13px; }
 .chip.redep { font-weight: 600; }
 .chip.redep.off { color: var(--warn); background: var(--warn-bg); border-color: #f2d98a; }
 .rhead .rflag { margin-left: auto; margin-right: 12px; font-size: 11px; font-weight: 700; color: #8a6100; background: #fdf1cf; padding: 4px 10px; border-radius: 6px; }
+
+/* ---------- quadrant: benchmark line, axis titles, small multiples ---------- */
+.quad-bench { position: absolute; left: 0; right: 0; border-top: 2px dotted #d93025; z-index: 1; }
+.quad-bench span { position: absolute; left: 8px; top: -16px; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; color: #d93025; background: rgba(255,255,255,.85); padding: 1px 6px; border-radius: 3px; }
+.quad-ylab { position: absolute; left: -70px; top: 50%; transform: rotate(-90deg) translate(-50%, -50%); transform-origin: 0 0; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #1a1d23; white-space: nowrap; }
+.quad-xlab { position: absolute; left: 50%; bottom: -44px; transform: translateX(-50%); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #1a1d23; }
+.quad-axes .quad-benchkey { color: #d93025; font-weight: 600; }
+.quad-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px 34px; flex: 1; min-height: 0; }
+.quad.compact { gap: 2px; }
+.quad-title { margin: 0 0 2px 78px; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #2e75b6; }
+.quad.compact .quad-plot { margin: 0 4px 30px 78px; }
+.quad.compact .quad-yt, .quad.compact .quad-xt { font-size: 10.5px; }
+.quad.compact .quad-zone span { font-size: 14px; } .quad.compact .quad-lane span { font-size: 11px; }
+.quad.compact .quad-lab { font-size: 9px; }
+.quad.compact .quad-ylab { display: none; }
+.quad.compact .quad-xlab { bottom: -30px; font-size: 9.5px; }
+.quad.compact .quad-bench span { font-size: 9px; }
+
+/* ---------- annex: performance by avenue and country as card rows ---------- */
+.rrows { display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 0; }
+.rrow { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+.rrh { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #1a1d23; padding-bottom: 4px; border-bottom: 2px solid #2e75b6; margin-bottom: 8px; }
+.rrh .flag { width: 24px; height: 16px; border-radius: 2px; }
+.rrh small { margin-left: 10px; font-size: 11px; font-weight: 500; color: #6e6e6e; }
+.rcards.byav { display: flex; align-items: stretch; gap: 12px; padding-bottom: 0; flex: 1 1 auto; min-height: 0; }
+.rcards.byav .rcard { flex: 3 1 0; min-width: 0; }
+.rcards.byav .rcard.off { flex: 1 1 0; }
+.rcards.byav .rch { font-size: 12.5px; padding: 6px 10px; gap: 6px; }
+.rcards.byav .rch small { font-size: 10.5px; }
+.rcards.byav .rch .pmarks { transform: scale(.85); transform-origin: left center; }
+.rcards.byav table.rct { font-size: 11.5px; flex: 1; }
+.rcards.byav .rct th, .rcards.byav .rct td { padding: 4px 8px; }
+.rcards.byav .rct thead th { font-size: 9px; }
+.rcards.byav .rnouse { font-size: 12px; padding: 14px 12px; }
+
+.quad-lab .flag { width: 16px; height: 11px; border-radius: 2px; flex: 0 0 auto; }
+.quad.compact .quad-lab .flag { width: 13px; height: 9px; }
+
+/* ---------- quadrant: faint gridlines and the no-data lane as flag chips ---------- */
+.quad-gy { position: absolute; left: 0; right: 0; border-top: 1px solid rgba(31,78,121,.07); pointer-events: none; }
+.quad-gx { position: absolute; top: 0; bottom: 0; border-left: 1px solid rgba(31,78,121,.07); pointer-events: none; }
+.quad-chips { position: absolute; left: 150px; right: 12px; top: 0; bottom: 0; display: flex; align-items: center; justify-content: space-evenly; flex-wrap: wrap; gap: 4px 6px; }
+.quad-chips em { display: inline-flex; align-items: center; gap: 5px; font-style: normal; font-size: 11px; font-weight: 600; color: #1a1d23; background: #fff; border: 1px solid #dfe3ea; border-radius: 999px; padding: 2px 9px 2px 5px; white-space: nowrap; }
+.quad-chips em .flag { width: 16px; height: 11px; border-radius: 2px; }
+.quad.compact .quad-chips { left: 90px; gap: 2px 3px; }
+.quad.compact .quad-chips em { font-size: 9px; padding: 1px 6px 1px 4px; gap: 3px; }
+.quad.compact .quad-chips em .flag { width: 12px; height: 8px; }

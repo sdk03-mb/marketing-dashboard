@@ -3,7 +3,6 @@
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Printer } from "lucide-react";
 import { buildGrid, derive, type Agg, type Cal, type Grid, type Hist, type MonthData, type Period } from "@/lib/engine";
-import { instructionsOf } from "@/lib/instruct";
 import { ALLCH, CHANNEL_NAMES, COUNTRIES, REGIONS } from "@/lib/plan";
 import { fmt, money, signed } from "@/lib/format";
 import { Logo } from "./Logo";
@@ -11,12 +10,10 @@ import { Flag } from "./Flag";
 import { Marks as ChannelIcon } from "./ChannelPicker";
 import { KpiBestWorst, KpiTiles } from "./ReportKpi";
 import { WorldMap } from "./WorldMap";
-import { PriorityBoard } from "./PriorityBoard";
-import { BudgetShift } from "./BudgetShift";
 import { Matrix } from "./Matrix";
 import { AiDetail, AiPyramid, LEVELS } from "./AiPyramid";
-import { Quadrant } from "./Quadrant";
-import { AvenueCountryTable, CountryAvenueTable, usedAvenues } from "./AvenueCountry";
+import { QUAD_METRICS, Quadrant } from "./Quadrant";
+import { CountryAvenueCards, CountryAvenueTable, usedAvenues } from "./AvenueCountry";
 
 type Props = { agg: Agg; period: Period; chan: string; enabled: Set<string>; months: MonthData[]; cal: Cal; hist: Hist; redep?: boolean };
 
@@ -49,12 +46,9 @@ function Page({ w, h = A3_H, wide, children }: { w: number; h?: number; wide?: b
   );
 }
 
-export function Report({ agg, period, chan, enabled: picked, cal, redep = true }: Props) {
+export function Report({ agg, period, chan, enabled: picked, redep = true }: Props) {
   // The report always counts "Other" (spend outside the plan list) so its totals match the source dashboard.
   const enabled = useMemo(() => new Set([...picked, "Other"]), [picked]);
-  // Instructions per market grouped by owning department feed the priority pyramid.
-  const scope = useMemo(() => gridNoRoi(agg, period, chan, enabled), [agg, period, chan, enabled]);
-  const lanes = useMemo(() => instructionsOf(scope.groups, period, cal, chan.replace(" / Google Search", "").replace(" (combined)", ""), 8), [scope, period, cal, chan]);
   const G = useMemo(() => gridNoRoi(agg, period, chan, enabled), [agg, period, chan, enabled]);
   const tot = G.groups.find((g) => g.tot) ?? G.groups[0];
   const byC = useMemo(() => G.groups.filter((g) => !g.tot && g.name !== "Other" && (g.act.Spend > 0 || g.pl.Spend > 0)).sort((a, b) => b.act.Spend - a.act.Spend), [G]);
@@ -139,7 +133,10 @@ export function Report({ agg, period, chan, enabled: picked, cal, redep = true }
     <Matrix grid={avenueGrid.grid} dense perRow={CHANNEL_NAMES.length} icon={(name) => <ChannelIcon chan={name} />} zero={new Set(avenueGrid.unused)}
       note={avenueGrid.unused.length ? <>We do not use {avenueGrid.unused.map((n, i) => <span key={n}>{i > 0 && (i === avenueGrid.unused.length - 1 ? " and " : ", ")}<b>{n}</b></span>)}.</> : null} />
   ) });
-  add({ key: "quad", title: "AI Recommendations by market", body: <Quadrant groups={G.groups} period={period} height={760} /> });
+  // One full page per unit figure against spend: the same markets, a different figure up the page.
+  for (const k of ["CPFA", "CPC", "CPL", "CPA", "AvgAccountSize", "Redeposit"]) {
+    add({ key: "quad-" + k, title: <>Chart of {QUAD_METRICS[k].l} vs Spend</>, body: <Quadrant groups={G.groups} period={period} height={760} metric={QUAD_METRICS[k]} /> });
+  }
   // AI recommendations: one pyramid page, what / why / how per level (text in src/components/AiPyramid.tsx).
   add({ key: "pyramid", sub: "All Channels", title: "AI Recommendations", body: <AiPyramid rowH={176} /> });
   // One deep-dive page per level, read from the base up: stop, fix, hold, scale, attack.
@@ -157,9 +154,7 @@ export function Report({ agg, period, chan, enabled: picked, cal, redep = true }
   // Annexure.
   const annexToc: string[] = [
     ...REGIONS.map((r) => r.name + ": return by market"),
-    ...used.filter((ch) => ch !== ALLCH).map((ch) => "Performance by avenue and country: " + ch.replace(" (combined)", "")),
-    "Budget shift: where the money moves and why",
-    "Priority board: every action by urgency",
+    "Performance by avenue and country: expected, actual, difference per avenue",
     "Performance by country: expected, actual, difference",
     "Performance by avenue: expected, actual, difference",
   ];
@@ -176,13 +171,12 @@ export function Report({ agg, period, chan, enabled: picked, cal, redep = true }
       </div>
     ) });
   }
-  // All channels is skipped here: the country tables at the end already cover the combined view.
-  for (const ch of used.filter((c) => c !== ALLCH)) {
-    add({ key: "act-" + ch, annex: true, sub: ch.replace(" (combined)", ""), title: <>Performance by avenue &amp; country <small className="rtsub">{ch.replace(" (combined)", "")}</small><span className="rtlogo"><ChannelIcon chan={ch} /></span></>,
-      body: <AvenueCountryTable agg={agg} period={period} chan={ch} /> });
+  // Three countries per page, one card per avenue in each row.
+  for (let i = 0; i < countryList.length; i += 3) {
+    const n = i / 3 + 1, of = Math.ceil(countryList.length / 3);
+    add({ key: "act" + n, annex: true, sub: "All avenues", title: <>Performance by avenue &amp; country{of > 1 ? " (" + n + "/" + of + ")" : ""}</>,
+      body: <CountryAvenueCards agg={agg} period={period} countries={countryList.slice(i, i + 3)} avenues={CHANNEL_NAMES} /> });
   }
-  add({ key: "budget", annex: true, title: "Budget shift", body: <BudgetShift groups={G.groups} lanes={lanes} rowH={104} dense /> });
-  add({ key: "board", annex: true, title: "Priority board", body: <PriorityBoard lanes={lanes} max={4} /> });
   for (const pg of pages) {
     add({ key: "tbl-" + pg.sec.title + pg.n, annex: true, sub: pg.sec.sub, title: <>{pg.sec.title}{pg.of > 1 ? " (" + pg.n + "/" + pg.of + ")" : ""}</>, body: (
       <div className="rcards">

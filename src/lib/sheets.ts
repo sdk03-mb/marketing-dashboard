@@ -10,3 +10,6 @@ export const SHEETS: Record<string, Row[]> = Object.fromEntries(SHEET_PERIODS.ma
 
 /** The workbook Total row for a platform, used for the All countries column when every country is in scope. */
 export const sheetTotal = (periodId: string, platform: string): SheetMetrics | undefined => SHEET_PERIODS.find((p) => p.id === periodId)?.totals[platform];
+
+/** Rows of the workbook period that covers exactly this range, so a quick range (last month) reads the JSON rather than the snapshot. */
+export const sheetRowsFor = (from: string, to: string): Row[] | undefined => SHEET_PERIODS.find((p) => p.from === from && p.to === to)?.rows;

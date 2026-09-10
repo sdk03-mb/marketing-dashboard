@@ -1,6 +1,6 @@
 import { ALLCH, CHANNELS, CHANNEL_NAMES, COUNTRIES, PLAN, PLAN_CONV } from "./plan";
 import { SNAPSHOT, type Row, type SheetMetrics } from "./snapshot";
-import { SHEETS, SHEET_PERIODS, sheetTotal } from "./sheets";
+import { SHEETS, SHEET_PERIODS, sheetRowsFor, sheetTotal } from "./sheets";
 import { fmt, money, signed, type Fmt } from "./format";
 
 /* ---------------- types ---------------- */
@@ -76,13 +76,17 @@ export function makeCal(now = new Date()): Cal {
     const f = new Date(sp.from + "T00:00:00"), t = new Date(sp.to + "T00:00:00");
     return mk(sp.id, sp.label, dLbl(f) + "-" + dLbl(t) + " " + t.getFullYear(), f, t);
   });
-  const periods = [
-    ...sheets,
+  const builtin = [
     mk("mtd", mName(curStart) + " MTD", "1-" + dLbl(mtdEnd), curStart, mtdEnd),
     mk("prev", mName(prevStart), "full month", prevStart, prevEnd),
     mk("day", "Yesterday", dLbl(yest), yest, yest),
     mk("wk", "Last 7 days", dLbl(wk) + "-" + dLbl(yest), wk, yest),
   ];
+  // A workbook period that covers exactly a built-in range (last month, say) is not listed twice; the built-in id reads its rows.
+  const same = (a: Period, b: Period) => +a.from === +b.from && +a.to === +b.to;
+  // Workbook-backed periods lead the list (and are the default view): sheet-only ranges first, then built-ins a sheet covers, then the rest.
+  const covered = builtin.filter((b) => sheets.some((sp) => same(sp, b)));
+  const periods = [...sheets.filter((sp) => !builtin.some((b) => same(sp, b))), ...covered, ...builtin.filter((b) => !covered.includes(b))];
   return { today, yest, wk, curStart, prevStart, prevEnd, mtdEnd, periods };
 }
 
@@ -120,7 +124,8 @@ declare global {
   interface Window { cowork?: { callMcpTool: (tool: string, args: Record<string, unknown>) => Promise<McpResult> } }
 }
 export const hasLive = () => typeof window !== "undefined" && !!window.cowork;
-export const hasSnapshot = (id: string) => !!SNAPSHOT[id] || !!SHEETS[id];
+export const hasSnapshot = (id: string) => !!SHEETS[id] || !!SNAPSHOT[id];
+export const hasData = (p: Period) => !!SHEETS[p.id] || !!sheetRowsFor(iso(p.from), iso(p.to)) || !!SNAPSHOT[p.id];
 
 async function dax(model: string, q: string, attempt = 0): Promise<Record<string, unknown>[]> {
   try {
@@ -194,7 +199,8 @@ export function aggregate(rows: Row[]): Agg {
 
 export async function loadPeriod(p: Period, cache: Record<string, Agg>): Promise<Agg> {
   if (cache[p.id]) return cache[p.id];
-  const rows = SNAPSHOT[p.id] ?? SHEETS[p.id] ?? rowsFromDax(await dax(MODEL_B, daxQuery(p)));
+  // Workbook JSON first (by id, then by exact date range), the Power BI snapshot next, the live query last.
+  const rows = SHEETS[p.id] ?? sheetRowsFor(iso(p.from), iso(p.to)) ?? SNAPSHOT[p.id] ?? rowsFromDax(await dax(MODEL_B, daxQuery(p)));
   return (cache[p.id] = aggregate(rows));
 }
 

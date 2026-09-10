@@ -1,6 +1,6 @@
 import { buildGrid, derive, type Agg, type Grid, type GridCell, type Period } from "@/lib/engine";
 import { ALLCH, COUNTRIES } from "@/lib/plan";
-import { fmt, type Fmt } from "@/lib/format";
+import { fmt, signed, type Fmt } from "@/lib/format";
 import { Flag } from "./Flag";
 import { Marks as ChannelIcon } from "./ChannelPicker";
 import { Matrix } from "./Matrix";
@@ -107,6 +107,61 @@ export function CountryAvenueTable({ agg, period, countries, avenues, perTable =
         <span>Per country: All channels, PPC / Google Search, Instagram + Facebook.</span>
         <em><b className="good" /> on plan</em><em><b className="warn" /> within reach</em><em><b className="bad" /> off plan</em><em><b className="none" /> no data</em>
       </div>
+    </div>
+  );
+}
+
+/** One row per country, one Expected / Actual / Diff card per avenue; an avenue with no spend in that country shows its logo and a note. */
+export function CountryAvenueCards({ agg, period, countries, avenues }: { agg: Agg; period: Period; countries: string[]; avenues: string[] }) {
+  return (
+    <div className="rrows">
+      {countries.map((c) => {
+        const all = buildGrid(agg, period, ALLCH, new Set([c])).groups.find((g) => g.name === c);
+        return (
+          <section key={c} className="rrow">
+            <div className="rrh"><Flag country={c} /><span>{c}</span>{all && <small>{fmt(all.act.Spend, "$0")} spent · {fmt(all.act.FundedAccounts, "n")} funded · all avenues</small>}</div>
+            <div className="rcards byav">
+              {avenues.map((ch) => {
+                const g = buildGrid(agg, period, ch, new Set([c]));
+                const gi = g.groups.findIndex((x) => x.name === c);
+                const used = gi >= 0 && g.groups[gi].act.Spend > 0;
+                if (!used) {
+                  return (
+                    <div key={ch} className="rcard off">
+                      <div className="rch"><ChannelIcon chan={ch} /><span>{short(ch)}</span></div>
+                      <p className="rnouse">We do not use {short(ch)} in {c}.</p>
+                    </div>
+                  );
+                }
+                const grp = g.groups[gi];
+                return (
+                  <div key={ch} className="rcard">
+                    <div className="rch"><ChannelIcon chan={ch} /><span>{short(ch)}</span><small>{fmt(grp.act.Spend, "$0")} · {fmt(grp.act.FundedAccounts, "n")} funded</small></div>
+                    <table className="rct">
+                      <thead><tr><th>Metric</th><th>Expected</th><th>Actual</th><th>Diff</th></tr></thead>
+                      <tbody>
+                        {g.rows.filter((r) => r.m.k !== "ROI").map((r) => {
+                          const cell = r.cells[gi], f = r.m.f;
+                          const dash = cell.na || cell.nospend || cell.nodata;
+                          const st = cell.na ? "bad" : cell.nospend || cell.nodata ? "" : cell.status;
+                          return (
+                            <tr key={r.m.l}>
+                              <th>{r.m.l}</th>
+                              <td className="exp">{cell.nodata && !cell.e ? "-" : fmt(cell.e, f)}</td>
+                              <td>{dash ? "-" : fmt(cell.a, f)}</td>
+                              <td className={st}>{dash || !cell.e ? "-" : signed(cell.diff, f)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
