@@ -3,7 +3,7 @@ import autoTable, { type CellHookData, type RowInput } from "jspdf-autotable";
 import { ALLCH, COUNTRIES, ISO } from "./plan";
 import { fmt, money, signed } from "./format";
 import {
-  buildCard, buildGrid, METRICS, recRows,
+  buildCard, buildGrid, METRICS, recRows, statusOf,
   type Agg, type Cal, type Hist, type MonthData, type Period, type RecRow, type Status,
 } from "./engine";
 
@@ -35,7 +35,7 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a3" });
   const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 18, GAP = 10;
   const chanLabel = chan.replace(" (combined)", "");
-  const stamp = "Marketing Dashboard - Plan vs Reality · " + period.label + " · " + chanLabel;
+  const stamp = "Marketing - Expected vs Reality · " + period.label + " · " + chanLabel;
   const countries = COUNTRIES.filter((c) => enabled.has(c));
   const flags = new Map<string, string | null>(await Promise.all(countries.map(async (c) => [c, await flagData(c)] as const)));
   const yieldUI = () => new Promise((r) => setTimeout(r, 0));
@@ -63,11 +63,11 @@ export async function buildReport(inp: ReportInput): Promise<jsPDF> {
   const metricRows = (act: Record<string, number>, pl: Record<string, number>, hasSpend: boolean) => {
     const rows: RowInput[] = [], statuses: Status[] = []; let group = "";
     for (const m of METRICS) {
-      if (m.group !== group) { group = m.group; rows.push([{ content: group.toUpperCase(), colSpan: 4, styles: { fillColor: BAND, textColor: INK2, fontStyle: "bold", fontSize: 8 } }]); statuses.push(""); }
+      if (m.group && m.group !== group) { group = m.group; rows.push([{ content: group.toUpperCase(), colSpan: 4, styles: { fillColor: BAND, textColor: INK2, fontStyle: "bold", fontSize: 8 } }]); statuses.push(""); }
       const a = act[m.k] || 0, e = pl[m.k] || 0;
       const nodata = (m.k === "Impressions" || m.k === "CTR") && !act.Impressions;
       const nospend = m.dir === "cost" && !hasSpend, na = m.dir === "cost" && hasSpend && !(a > 0);
-      const st: Status = nodata || nospend ? "" : na ? "bad" : e ? (m.dir === "cost" ? (a <= e ? "good" : a <= e * 1.5 ? "warn" : "bad") : (a / e >= 0.9 ? "good" : a / e >= 0.6 ? "warn" : "bad")) : "";
+      const st: Status = nodata || nospend ? "" : na ? "bad" : statusOf(m, e, a);
       rows.push([m.l, nodata && !e ? "-" : fmt(e, m.f), nodata || nospend || na ? "-" : fmt(a, m.f), nodata || nospend || na || !e ? "-" : signed(a - e, m.f)]);
       statuses.push(st);
     }

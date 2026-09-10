@@ -60,7 +60,7 @@ function GoogleG() {
   );
 }
 
-function Marks({ chan }: { chan: string }) {
+export function Marks({ chan }: { chan: string }) {
   return (
     <span className="pmarks">
       {chan === ALLCH && <LayoutGrid className="pmark all" size={16} strokeWidth={1.8} aria-hidden="true" />}

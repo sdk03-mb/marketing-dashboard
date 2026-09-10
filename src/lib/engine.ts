@@ -1,20 +1,23 @@
 import { ALLCH, CHANNELS, CHANNEL_NAMES, COUNTRIES, PLAN, PLAN_CONV } from "./plan";
-import { SNAPSHOT, type Row } from "./snapshot";
+import { SNAPSHOT, type Row, type SheetMetrics } from "./snapshot";
+import { SHEETS, SHEET_PERIODS, sheetTotal } from "./sheets";
 import { fmt, money, signed, type Fmt } from "./format";
 
 /* ---------------- types ---------------- */
-export type Bucket = {
+export type BucketNums = {
   Spend: number; Impressions: number; Clicks: number; Leads: number; LiveAccounts: number; FundedAccounts: number;
   TotalDeposits: number; FTD: number; FTDAccounts: number;
 };
-export type Derived = Bucket & {
+/** `sheet` survives only while a bucket is exactly one workbook row; any merge drops it and the ratios are recomputed. */
+export type Bucket = BucketNums & { sheet?: SheetMetrics; n?: number };
+export type Derived = BucketNums & {
   CPC: number; CPL: number; CPA: number; CPFA: number; Ratio: number;
   AvgAccountSize: number; Redeposit: number; ROI: number; Conv: number;
   CTR: number; LeadToAcct: number; LeadToFunded: number;
   /** Share of the group total spend; filled in by buildGrid. */
   SpendPct: number;
 };
-export const PLAN_CTR = 0.08; // PPC plan CTR from the Aug plan sheet (14,286 clicks on 178,571 impressions)
+export const PLAN_CTR = 0.08; // PPC plan CTR (14,286 clicks on 178,571 impressions in the August plan)
 export type Agg = Record<string, Record<string, Bucket>>; // channel -> country -> bucket
 export type Cadence = "Daily" | "Weekly" | "Monthly";
 export type Period = {
@@ -25,12 +28,27 @@ export type Cal = {
   periods: Period[];
 };
 export type Hist = { prev: Agg; mtd: Agg };
-export type MonthData = Period & { agg: Agg; missing: boolean; illustrative?: boolean };
+export type MonthData = Period & { agg: Agg };
 
 export const emptyBucket = (): Bucket => ({
   Spend: 0, Impressions: 0, Clicks: 0, Leads: 0, LiveAccounts: 0, FundedAccounts: 0, TotalDeposits: 0, FTD: 0, FTDAccounts: 0,
 });
-const BUCKET_KEYS = Object.keys(emptyBucket()) as (keyof Bucket)[];
+const BUCKET_KEYS = Object.keys(emptyBucket()) as (keyof BucketNums)[];
+
+/* ---------------- re-deposit switch ---------------- */
+// Off means every deposit figure counts first deposits only: TotalDeposits = FTD, Redeposit = 0, ROI on first deposits. Plan follows the same rule.
+let REDEP = true;
+export const setRedeposits = (on: boolean) => { REDEP = on; };
+export const redepositsOn = () => REDEP;
+export function stripRedeposits(agg: Agg): Agg {
+  const out: Agg = {};
+  for (const [ch, byC] of Object.entries(agg)) {
+    out[ch] = {};
+    for (const [c, b] of Object.entries(byC))
+      out[ch][c] = { ...b, TotalDeposits: b.FTD, sheet: b.sheet ? { ...b.sheet, Redeposit: 0, ROI: b.Spend > 0 ? b.FTD / b.Spend : 0 } : undefined };
+  }
+  return out;
+}
 
 /* ---------------- dates ---------------- */
 export const mName = (d: Date) => d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
@@ -53,7 +71,13 @@ export function makeCal(now = new Date()): Cal {
   const mk = (id: string, label: string, full: string, from: Date, to: Date): Period => ({
     id, label, full, from, to, pace: daysBetween(from, to) / dim(from), cadence: cadenceFor(0, id),
   });
+  // Workbook periods first: the exports are the freshest numbers and the default view.
+  const sheets = SHEET_PERIODS.map((sp) => {
+    const f = new Date(sp.from + "T00:00:00"), t = new Date(sp.to + "T00:00:00");
+    return mk(sp.id, sp.label, dLbl(f) + "-" + dLbl(t) + " " + t.getFullYear(), f, t);
+  });
   const periods = [
+    ...sheets,
     mk("mtd", mName(curStart) + " MTD", "1-" + dLbl(mtdEnd), curStart, mtdEnd),
     mk("prev", mName(prevStart), "full month", prevStart, prevEnd),
     mk("day", "Yesterday", dLbl(yest), yest, yest),
@@ -87,43 +111,6 @@ export function monthPeriods(cal: Cal, count = 3): Period[] {
   return out;
 }
 
-/* ---------------- illustrative history ---------------- */
-// Deterministic pseudo-random in [0,1) from a string; same month always gives the same numbers.
-function hash01(s: string) {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return ((h >>> 0) % 10000) / 10000;
-}
-/**
- * Placeholder month for periods the snapshot does not cover: plan scaled by a stable factor.
- * Flagged `illustrative` in the UI; replace with the live monthly DAX query when connected.
- */
-export function syntheticAgg(p: Period, level = 1): Agg {
-  // `level` = observed spend as a share of plan in the latest real month, so placeholders follow the real run-rate.
-  const agg: Agg = {};
-  for (const chan of ["PPC / Google Search", "Instagram + Facebook"]) {
-    agg[chan] = {};
-    for (const c of COUNTRIES) {
-      const pl = planFor(chan, c, p.pace);
-      if (!pl.Spend) continue;
-      const k = p.id + "|" + chan + "|" + c;
-      const spendF = level * (0.8 + hash01(k + "s") * 0.45);  // run-rate +/- 20%
-      const convF = 0.35 + hash01(k + "c") * 0.9;           // funded conversion 35% .. 125% of plan
-      const depF = 0.4 + hash01(k + "d") * 1.4;             // deposit size 40% .. 180% of plan
-      const spend = pl.Spend * spendF;
-      const leads = pl.Leads * spendF * (0.85 + hash01(k + "l") * 0.3);
-      const accounts = leads * (pl.Leads ? pl.LiveAccounts / pl.Leads : 0.35) * (0.8 + hash01(k + "a") * 0.4);
-      const funded = Math.round(accounts * PLAN_CONV * convF);
-      const ftd = funded * pl.AvgAccountSize * depF;
-      agg[chan][c] = {
-        Spend: spend, Impressions: 0, Clicks: pl.Clicks * spendF, Leads: Math.round(leads), LiveAccounts: Math.round(accounts),
-        FundedAccounts: funded, FTDAccounts: funded, FTD: ftd, TotalDeposits: ftd * (1 + 1.5 * (0.6 + hash01(k + "r") * 0.8)),
-      };
-    }
-  }
-  return agg;
-}
-
 /* ---------------- data loading ---------------- */
 const MODEL_B = "7785fb34-8f46-479c-8a6f-aed57c90b26c";
 const TOOL = "mcp__6f82d968-caf4-4327-a8ab-503874be5619__execute_dax";
@@ -133,7 +120,7 @@ declare global {
   interface Window { cowork?: { callMcpTool: (tool: string, args: Record<string, unknown>) => Promise<McpResult> } }
 }
 export const hasLive = () => typeof window !== "undefined" && !!window.cowork;
-export const hasSnapshot = (id: string) => !!SNAPSHOT[id];
+export const hasSnapshot = (id: string) => !!SNAPSHOT[id] || !!SHEETS[id];
 
 async function dax(model: string, q: string, attempt = 0): Promise<Record<string, unknown>[]> {
   try {
@@ -198,19 +185,22 @@ export function aggregate(rows: Row[]): Agg {
     const b = (agg[ch][c] ??= emptyBucket());
     b.Spend += r.Spend; b.Impressions += r.Impressions ?? 0; b.Clicks += r.Clicks; b.Leads += r.Leads;
     b.LiveAccounts += r.Accounts; b.FundedAccounts += r.FundedEvt;
-    b.TotalDeposits += r.TotDep; b.FTD += r.TotDep - r.Redep; b.FTDAccounts += r.FundedEvt;
+    b.TotalDeposits += r.TotDep; b.FTD += r.TotDep - r.Redep; b.FTDAccounts += r.FTDAccounts ?? r.FundedEvt;
+    b.n = (b.n ?? 0) + 1;
+    b.sheet = b.n === 1 ? r.sheet : undefined;
   }
   return agg;
 }
 
 export async function loadPeriod(p: Period, cache: Record<string, Agg>): Promise<Agg> {
   if (cache[p.id]) return cache[p.id];
-  const rows = SNAPSHOT[p.id] ?? rowsFromDax(await dax(MODEL_B, daxQuery(p)));
+  const rows = SNAPSHOT[p.id] ?? SHEETS[p.id] ?? rowsFromDax(await dax(MODEL_B, daxQuery(p)));
   return (cache[p.id] = aggregate(rows));
 }
 
 /* ---------------- derived metrics ---------------- */
 export function derive(b?: Bucket | null): Derived {
+  if (b?.sheet) return withSheet(derive({ ...b, sheet: undefined }), b.sheet);
   const x = b ?? emptyBucket();
   const CPFA = x.FundedAccounts > 0 ? x.Spend / x.FundedAccounts : 0;
   const CPA = x.LiveAccounts > 0 ? x.Spend / x.LiveAccounts : 0;
@@ -229,6 +219,12 @@ export function derive(b?: Bucket | null): Derived {
     LeadToFunded: x.Leads > 0 ? x.FundedAccounts / x.Leads : 0,
     SpendPct: 0,
   };
+}
+
+/** Sheet figures win over recomputed ones: the workbook is the master where a bucket is one of its rows or its Total. */
+export function withSheet(d: Derived, sh?: SheetMetrics): Derived {
+  if (!sh) return d;
+  return { ...d, CPC: sh.CPC, CPL: sh.CPL, CPA: sh.CPA, CPFA: sh.CPFA, Ratio: sh.CPFA > 0 ? sh.CPA / sh.CPFA : 0, AvgAccountSize: sh.AvgAccountSize, Redeposit: sh.Redeposit, ROI: sh.ROI };
 }
 
 export function sumBuckets(...bs: (Bucket | undefined | null)[]): Bucket {
@@ -275,6 +271,7 @@ export function planRaw(chan: string, ctry: string): Derived {
   p.CPC = p.Clicks > 0 ? p.Spend / p.Clicks : 0;
   p.FTDAccounts = p.FundedAccounts;
   p.Ratio = p.CPFA > 0 ? p.CPA / p.CPFA : 0;
+  if (!REDEP) { p.Redeposit = 0; p.TotalDeposits = p.FTD; }
   p.ROI = p.Spend > 0 ? p.TotalDeposits / p.Spend : 0;
   p.Conv = p.LiveAccounts > 0 ? p.FundedAccounts / p.LiveAccounts : 0;
   p.CTR = p.Impressions > 0 ? (ppcSpend / 7) / p.Impressions : 0; // PPC clicks over PPC impressions
@@ -293,37 +290,25 @@ export function planFor(chan: string, ctry: string, f?: number): Derived {
 }
 
 /* ---------------- performance grid ---------------- */
-export type MetricDef = { k: keyof Derived; l: string; f: Fmt; dir: "vol" | "cost"; group: string };
+export type MetricDef = { k: keyof Derived; l: string; f: Fmt; dir: "vol" | "cost" | "none"; group: string };
+// Same eight rows as the MB Marketing Dashboard (index.html), plus ROI.
 export const METRICS: MetricDef[] = [
-  { k: "Spend", l: "Spent $", f: "$0", dir: "vol", group: "Spend" },
-  { k: "SpendPct", l: "Spent %", f: "pct1", dir: "vol", group: "Spend" },
-  { k: "Impressions", l: "Impressions", f: "n", dir: "vol", group: "Traffic" },
-  { k: "Clicks", l: "Clicks", f: "n", dir: "vol", group: "Traffic" },
-  { k: "CTR", l: "CTR %", f: "pct2", dir: "vol", group: "Traffic" },
-  { k: "CPC", l: "CPC $", f: "$2", dir: "cost", group: "Traffic" },
-  { k: "Leads", l: "Leads", f: "n", dir: "vol", group: "Leads" },
-  { k: "CPL", l: "CPL $", f: "$2", dir: "cost", group: "Leads" },
-  { k: "LeadToAcct", l: "Leads to Accounts %", f: "pct1", dir: "vol", group: "Leads" },
-  { k: "LiveAccounts", l: "Live Accounts", f: "n", dir: "vol", group: "Accounts" },
-  { k: "CPA", l: "CPA $", f: "$2", dir: "cost", group: "Accounts" },
-  { k: "Conv", l: "Live Account to Funded Account", f: "pct1", dir: "vol", group: "Accounts" },
-  { k: "LeadToFunded", l: "Leads to Funded Accounts %", f: "pct1", dir: "vol", group: "Accounts" },
-  { k: "FundedAccounts", l: "Funded Accounts (cohort)", f: "n", dir: "vol", group: "Funded" },
-  { k: "CPFA", l: "CPFA $", f: "$2", dir: "cost", group: "Funded" },
-  { k: "Conv", l: "Accounts to Funded %", f: "pct1", dir: "vol", group: "Funded" },
-  { k: "FTDAccounts", l: "FTD Accounts (all, non-cohorted)", f: "n", dir: "vol", group: "Funded" },
-  { k: "AvgAccountSize", l: "Average Account Size $", f: "$0", dir: "vol", group: "Deposits" },
-  { k: "FTD", l: "FTD $", f: "$0", dir: "vol", group: "Deposits" },
-  { k: "Redeposit", l: "Re-Deposit $", f: "$0", dir: "vol", group: "Deposits" },
-  { k: "TotalDeposits", l: "Total Deposits $", f: "$0", dir: "vol", group: "Deposits" },
-  { k: "ROI", l: "ROI (NMI)", f: "pct", dir: "vol", group: "Deposits" },
+  { k: "Spend", l: "Spend $", f: "$2", dir: "vol", group: "" },
+  { k: "CPC", l: "CPC $", f: "$2", dir: "cost", group: "" },
+  { k: "CPL", l: "CPL $", f: "$2", dir: "cost", group: "" },
+  { k: "CPA", l: "CPA $", f: "$2", dir: "cost", group: "" },
+  { k: "CPFA", l: "CPFA $", f: "$2", dir: "cost", group: "" },
+  { k: "Ratio", l: "CPA / CPFA", f: "r", dir: "none", group: "" },
+  { k: "AvgAccountSize", l: "Avg Account Size $", f: "$2", dir: "vol", group: "" },
+  { k: "Redeposit", l: "Redeposit Total $", f: "$2", dir: "vol", group: "" },
+  { k: "ROI", l: "ROI % (NMI)", f: "pct", dir: "vol", group: "" },
 ];
 /** Metrics that need impression data, which only the live query provides. */
 const NEEDS_IMPRESSIONS = new Set<keyof Derived>(["Impressions", "CTR"]);
 
 export type Status = "" | "good" | "warn" | "bad";
-export function statusOf(m: { dir: "vol" | "cost" }, exp: number, act: number): Status {
-  if (!exp) return "";
+export function statusOf(m: { dir: "vol" | "cost" | "none" }, exp: number, act: number): Status {
+  if (!exp || m.dir === "none") return "";
   if (m.dir === "cost") { if (!act) return ""; return act <= exp ? "good" : act <= exp * 1.5 ? "warn" : "bad"; }
   const pct = act / exp;
   return pct >= 0.9 ? "good" : pct >= 0.6 ? "warn" : "bad";
@@ -343,7 +328,9 @@ export function buildGrid(agg: Agg, p: Period, chan: string, enabled: Set<string
   const allOn = COUNTRIES.every((c) => enabled.has(c));
   const groups: GridGroup[] = cols.map((c) => ({ name: c, tot: false, act: derive(data[c]), pl: planFor(chan, c, p.pace) }));
   // Total group only when it adds information (two or more countries).
-  if (cols.length > 1) groups.unshift({ name: allOn ? "All countries" : "Selected countries", tot: true, act: derive(tot), pl: derive(totP) });
+  const plats = CHANNELS[chan] ?? [];
+  const totSheet = allOn && plats.length === 1 ? sheetTotal(p.id, plats[0]) : undefined;
+  if (cols.length > 1) groups.unshift({ name: allOn ? "All countries" : "Selected countries", tot: true, act: withSheet(derive(tot), totSheet), pl: derive(totP) });
   // Spent % = share of the group total (total row is 100% by definition).
   for (const g of groups) {
     g.act.SpendPct = tot.Spend > 0 ? g.act.Spend / tot.Spend : 0;
@@ -544,5 +531,5 @@ export function buildCard(r: RecRow, p: Period, cal: Cal, hist: Hist, months: Mo
       : ["Onboarding email in local language", "Deposit how-to for " + r.c + " methods"], openWeak ? "warn" : "dept"));
   }
   const fixTree: FixNode = { name: r.c + " · " + r.chanS, tone: r.kind === "grow" ? "good" : "bad", children: mk };
-  return { why, given, reasoning: R, actions: A, fixTree, mermaid, spend, funded, monthsMissing: months.some((m) => m.missing) };
+  return { why, given, reasoning: R, actions: A, fixTree, mermaid, spend, funded, monthsMissing: months.length < 12 };
 }

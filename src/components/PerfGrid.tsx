@@ -64,7 +64,7 @@ export function PerfGrid({ agg, period, chan, enabled, metrics }: Props) {
                 const t = cellText(r.cells[gi], r.m.f);
                 return (
                   <Fragment key={ri}>
-                    {(ri === 0 || rows[ri - 1].m.group !== r.m.group) && <tr className="mgrp"><th colSpan={4}>{r.m.group}</th></tr>}
+                    {r.m.group && (ri === 0 || rows[ri - 1].m.group !== r.m.group) && <tr className="mgrp"><th colSpan={4}>{r.m.group}</th></tr>}
                     <tr><th>{r.m.l}</th><td className="exp">{t.e}</td><td>{t.a}</td><td className={t.st}>{t.d}</td></tr>
                   </Fragment>
                 );
@@ -106,7 +106,7 @@ export function PerfGrid({ agg, period, chan, enabled, metrics }: Props) {
           )}
           {rows.map((r, ri) => (
             <Fragment key={ri}>
-            {(ri === 0 || rows[ri - 1].m.group !== r.m.group) && (
+            {r.m.group && (ri === 0 || rows[ri - 1].m.group !== r.m.group) && (
               <tr className="grp"><th className="rowh gname">{r.m.group}</th><td colSpan={nCols - 1}></td></tr>
             )}
             <tr>

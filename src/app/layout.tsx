@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
-  title: "Marketing Dashboard - Plan vs Reality",
+  title: "Marketing - Expected vs Reality",
   description: "Marketing performance against the monthly plan by channel and country.",
 };
 

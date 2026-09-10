@@ -37,7 +37,7 @@ const short = (v: number, f: Fmt) => {
 const TIP = { backgroundColor: "#fff", borderColor: "#e6e9ee", borderWidth: 1, titleColor: INK, bodyColor: INK, padding: 10 };
 
 /* ---------- chart configs ---------- */
-type Pt = { name: string; actual: number; plan: number; illustrative: boolean };
+type Pt = { name: string; actual: number; plan: number };
 
 function trendConfig(pts: Pt[], f: Fmt, cost: boolean): ChartConfiguration {
   const above = cost ? RED : GREEN, below = cost ? GREEN : RED;
@@ -56,7 +56,7 @@ function trendConfig(pts: Pt[], f: Fmt, cost: boolean): ChartConfiguration {
       plugins: {
         legend: { display: false },
         tooltip: { ...TIP, displayColors: false, callbacks: {
-          title: (items) => { const p = pts[items[0].dataIndex]; return p.name + (p.illustrative ? "  (illustrative)" : ""); },
+          title: (items) => pts[items[0].dataIndex].name,
           label: (item) => `${item.dataset.label}: ${fmt(Number(item.parsed.y ?? 0), f)}`,
           afterBody: (items) => { const p = pts[items[0].dataIndex]; const d = p.actual - p.plan; return "vs plan: " + (d > 0 ? "+" : "") + fmt(d, f); },
         } },
@@ -146,10 +146,10 @@ export function Overview({ agg, period, chan, enabled, months }: Props) {
   const series = useMemo(() => months.map((mo) => {
     const mg = buildGrid(mo.agg, mo, chan, enabled);
     const t = mg.groups.find((x) => x.tot) ?? mg.groups[0];
-    return { name: mo.label.replace(" MTD", "*"), act: t?.act, pl: t?.pl, illustrative: !!mo.illustrative };
+    return { name: mo.label.replace(" MTD", "*"), act: t?.act, pl: t?.pl };
   }), [months, chan, enabled]);
   const trends = useMemo(() => TRENDS.map((m) => ({
-    m, config: trendConfig(series.map((s) => ({ name: s.name, actual: s.act?.[m.k] || 0, plan: s.pl?.[m.k] || 0, illustrative: s.illustrative })), m.f, m.dir === "cost"),
+    m, config: trendConfig(series.map((s) => ({ name: s.name, actual: s.act?.[m.k] || 0, plan: s.pl?.[m.k] || 0 })), m.f, m.dir === "cost"),
   })), [series]);
 
   if (!g) return <p className="empty nocountry">No country selected. Pick at least one country to see the overview.</p>;
@@ -208,7 +208,7 @@ export function Overview({ agg, period, chan, enabled, months }: Props) {
       <div className="kpigrid trends">
         {trends.map(({ m, config }) => (
           <div key={m.k} className="ccard">
-            <h4>{m.l} <span>last 12 months, actual vs plan</span></h4>
+            <h4>{m.l} <span>by month, actual vs plan</span></h4>
             <ChartJS config={config} height={150} />
             <div className="klegend"><span className="ln act" />Actual <span className="ln plan" />Plan <span className="sw g" />Beat plan <span className="sw r" />Missed plan</div>
           </div>

@@ -4,6 +4,17 @@ export const COUNTRIES = [
   "Turkey", "Kazakhstan", "Canada", "Australia", "India", "Pakistan",
 ] as const;
 
+/** Continents for the annexure maps, one page each. `fit` lists world-atlas country names the map zooms to, so a continent with no market still draws. */
+export const REGIONS: { name: string; countries: string[]; fit: string[] }[] = [
+  { name: "Middle East", countries: ["UAE", "KSA", "Qatar", "Oman", "Lebanon", "Jordan", "Syria"], fit: ["United Arab Emirates", "Saudi Arabia", "Qatar", "Oman", "Lebanon", "Jordan", "Syria", "Iraq", "Kuwait", "Yemen"] },
+  { name: "Africa", countries: ["Tunisia", "Morocco"], fit: ["Morocco", "Algeria", "Tunisia", "Libya", "Egypt", "Mauritania", "Mali", "Niger", "Chad", "Sudan"] },
+  { name: "Europe", countries: ["Switzerland", "Spain", "Germany", "Greece", "Norway", "Sweden", "Netherlands", "Poland", "Turkey"], fit: ["Switzerland", "Spain", "Germany", "Greece", "Norway", "Sweden", "Netherlands", "Poland", "Turkey", "France", "Italy", "United Kingdom", "Portugal", "Finland"] },
+  { name: "Asia", countries: ["Kazakhstan", "India", "Pakistan"], fit: ["Kazakhstan", "India", "Pakistan", "China", "Mongolia", "Iran", "Afghanistan", "Thailand", "Vietnam", "Japan", "Indonesia", "Malaysia"] },
+  { name: "North America", countries: ["Canada"], fit: ["Canada", "United States of America", "Mexico"] },
+  { name: "South America", countries: [], fit: ["Brazil", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Bolivia", "Ecuador", "Paraguay", "Uruguay"] },
+  { name: "Oceania", countries: ["Australia"], fit: ["Australia", "New Zealand", "Papua New Guinea"] },
+];
+
 export const CHANNELS: Record<string, string[]> = {
   "PPC / Google Search": [
     "Google Search", "Bing Search", "Google Display", "Google Performance Max", "Google DemandGen",
