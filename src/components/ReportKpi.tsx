@@ -2,11 +2,9 @@
 
 import { useMemo } from "react";
 import { buildGrid, type Agg, type Period } from "@/lib/engine";
-import { ALLCH, CHANNEL_NAMES, COUNTRIES } from "@/lib/plan";
 import { fmt, money } from "@/lib/format";
 import { EChart, type Option } from "./EChart";
 import { Flag } from "./Flag";
-import { Marks as ChannelIcon } from "./ChannelPicker";
 
 // Report palette: Office-style blues; KPI tiles in four shades, darkest first.
 export const BLUE = "#2e75b6", BLUE2 = "#1f9dbf";
@@ -25,7 +23,7 @@ export function hbar(names: string[], values: number[], color: string, isMoney: 
 }
 
 type Props = { agg: Agg; period: Period; chan: string; enabled: Set<string>; chartHeight?: number; svg?: boolean };
-type Rank = { key: string; name: string; roi: number; funded: number; spend: number };
+type Pick = { name: string; value: string } | undefined;
 
 /** Everything the KPI pieces need: totals, top markets, tile values and best / worst rows. */
 function useKpi(agg: Agg, period: Period, chan: string, enabled: Set<string>) {
@@ -33,13 +31,6 @@ function useKpi(agg: Agg, period: Period, chan: string, enabled: Set<string>) {
   const tot = G.groups.find((g) => g.tot) ?? G.groups[0];
   const byC = useMemo(() => G.groups.filter((g) => !g.tot && g.name !== "Other" && (g.act.Spend > 0 || g.pl.Spend > 0)).sort((a, b) => b.act.Spend - a.act.Spend), [G]);
   const top = byC.slice(0, 16);
-  const allOn = useMemo(() => new Set<string>(COUNTRIES), []);
-  // Avenue totals over every country, for the best / worst avenue tiles.
-  const avenues = useMemo(() => CHANNEL_NAMES.flatMap((ch) => {
-    const g = buildGrid(agg, period, ch, allOn);
-    const t = g.groups.find((x) => x.tot) ?? g.groups[0];
-    return t && t.act.Spend > 0 ? [{ key: ch, name: ch.replace(" (combined)", ""), roi: t.act.ROI, funded: t.act.FundedAccounts, spend: t.act.Spend }] : [];
-  }), [agg, period, allOn]);
   if (!tot) return null;
   const a = tot.act;
   const tiles = [
@@ -50,15 +41,19 @@ function useKpi(agg: Agg, period: Period, chan: string, enabled: Set<string>) {
     { l: "CPFA", v: a.FundedAccounts ? fmt(a.CPFA, "$2") : "-", c: BLUES[4] },
     { l: "Avg account size", v: a.FTDAccounts ? fmt(a.AvgAccountSize, "$2") : "-", c: BLUES[5] },
   ];
-  // Best / worst by return per $1 among markets and avenues with spend; funded accounts break ties.
-  const rank = (xs: Rank[]) => [...xs].sort((a, b) => b.roi - a.roi || b.funded - a.funded);
-  const cRank = rank(byC.filter((g) => g.act.Spend > 0).map((g) => ({ key: g.name, name: g.name, roi: g.act.ROI, funded: g.act.FundedAccounts, spend: g.act.Spend })));
-  const aRank = rank(avenues.filter((a) => a.key !== ALLCH));
-  const bw = (xs: Rank[]) => ({ best: xs[0], worst: xs.length > 1 ? xs[xs.length - 1] : undefined });
-  const bwC = bw(cRank), bwA = bw(aRank);
-  const bwRows = [
-    { l: "Best country", x: bwC.best, flag: true }, { l: "Worst country", x: bwC.worst, flag: true },
-    { l: "Best avenue", x: bwA.best, flag: false }, { l: "Worst avenue", x: bwA.worst, flag: false },
+  // Four winners among countries with spend. "Meaningful volume" = at least 3 funded accounts, or the most funded any market reached if none has 3.
+  const spent = byC.filter((g) => g.act.Spend > 0);
+  const funded = spent.filter((g) => g.act.FundedAccounts > 0);
+  const minF = Math.min(3, Math.max(1, ...funded.map((g) => g.act.FundedAccounts)));
+  const winner = (xs: typeof spent, score: (g: (typeof spent)[number]) => number, value: (g: (typeof spent)[number]) => string): Pick => {
+    const best = [...xs].filter((g) => isFinite(score(g)) && score(g) > 0).sort((a, b) => score(b) - score(a))[0];
+    return best ? { name: best.name, value: value(best) } : undefined;
+  };
+  const bwRows: { l: string; sub: string; x: Pick }[] = [
+    { l: "Best country", sub: "Lowest CPFA, 3+ funded accounts", x: winner(funded.filter((g) => g.act.FundedAccounts >= minF), (g) => 1 / g.act.CPFA, (g) => fmt(g.act.CPFA, "$0")) },
+    { l: "Most valuable country", sub: "Highest avg account size", x: winner(funded, (g) => g.act.AvgAccountSize, (g) => fmt(g.act.AvgAccountSize, "$0")) },
+    { l: "Best overall country", sub: "Avg account size ÷ CPFA", x: winner(funded, (g) => g.act.AvgAccountSize / g.act.CPFA, (g) => fmt(g.act.AvgAccountSize / g.act.CPFA, "r")) },
+    { l: "Best-converting market", sub: "Funded accounts ÷ leads", x: winner(funded.filter((g) => g.act.Leads > 0), (g) => g.act.LeadToFunded, (g) => fmt(g.act.LeadToFunded, "pct1")) },
   ];
   return { tot, top, tiles, bwRows };
 }
@@ -93,7 +88,7 @@ export function KpiCharts({ agg, period, chan, enabled, chartHeight = 600, svg =
   );
 }
 
-/** Best and worst market / avenue by return per $1 spent, same tile style as the KPI column. */
+/** Four winning countries: cheapest funded account, biggest accounts, best value for money, best conversion. Same tile style as the KPI column. */
 export function KpiBestWorst({ agg, period, chan, enabled }: Props) {
   const k = useKpi(agg, period, chan, enabled);
   if (!k) return null;
@@ -101,13 +96,12 @@ export function KpiBestWorst({ agg, period, chan, enabled }: Props) {
     <div className="rbw">
       {k.bwRows.map((row, i) => (
         <div key={row.l} className="rtile" style={{ background: BLUES[i] }}>
-          {/* Avenue logos pinned to the top-right corner. */}
-          {row.x && !row.flag && <div className="rcorner"><ChannelIcon chan={row.x.key} /></div>}
           <div className="rtl">{row.l}</div>
+          <div className="rbws">{row.sub}</div>
           {row.x ? (
             <>
-              <div className="rbwn">{row.flag && <Flag country={row.x.name} />}<span>{row.x.name}</span></div>
-              <div className="rbwv"><small>{money(row.x.spend)} spent</small></div>
+              <div className="rbwn"><Flag country={row.x.name} /><span>{row.x.name}</span></div>
+              <div className="rbwv"><small>{row.x.value}</small></div>
             </>
           ) : <div className="rbwv"><span>-</span></div>}
         </div>
