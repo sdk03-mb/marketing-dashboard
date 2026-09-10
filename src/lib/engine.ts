@@ -335,7 +335,8 @@ export function buildGrid(agg: Agg, p: Period, chan: string, enabled: Set<string
   const groups: GridGroup[] = cols.map((c) => ({ name: c, tot: false, act: derive(data[c]), pl: planFor(chan, c, p.pace) }));
   // Total group only when it adds information (two or more countries).
   const plats = CHANNELS[chan] ?? [];
-  const totSheet = allOn && plats.length === 1 ? sheetTotal(p.id, plats[0]) : undefined;
+  // Workbook periods carry one platform per channel (Google Search, Facebook & Instagram), so the first platform with a Total row is the channel total.
+  const totSheet = allOn ? plats.map((pl) => sheetTotal(p.id, pl, iso(p.from), iso(p.to))).find(Boolean) : undefined;
   if (cols.length > 1) groups.unshift({ name: allOn ? "All countries" : "Selected countries", tot: true, act: withSheet(derive(tot), totSheet), pl: derive(totP) });
   // Spent % = share of the group total (total row is 100% by definition).
   for (const g of groups) {

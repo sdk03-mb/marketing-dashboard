@@ -1,6 +1,6 @@
 // Snapshot of the Power BI query result per quick-range period, copied verbatim from
 // aish_marketing/MB_Marketing_Dashboard2/index.html (const SNAPSHOT), taken 8 September 2026.
-// Keys: mtd, day, wk (last month comes from src/data/sheets.json). Used when the live MCP connection is unavailable.
+// Keys: mtd, day, wk (last month comes from src/data/marketing-data.json). Used when the live MCP connection is unavailable.
 // Regenerate from index.html rather than editing rows by hand.
 
 export const SNAPSHOT_DATE = "8 September 2026";
@@ -94,7 +94,7 @@ const MTD: Raw[] = [
   ["Australia", "Google Search", 14240.376081, 1078, 71, 17, 3, 24051.4031422, 23117.4361422],
 ];
 
-// August 2026 (last month) moved to src/data/sheets.json, period "aug".
+// August 2026 (last month) moved to src/data/marketing-data.json, period "aug".
 
 const DAY: Raw[] = [
   ["Other", "Facebook & Instagram", 0, 0, 0, 0, 0, 2094.7, 2094.7],
