@@ -6,8 +6,13 @@
   "The three workbooks cover three different windows and are kept apart deliberately:",
   "  actuals[aug]      = 1-31 Aug 2026, rates and spend only",
   "  actuals[sep]      = 1-9 Sept 2026, rates and spend only",
-  "  augustPlan.actual = 1-26 Aug 2026, the only source that states clicks/leads/accounts/funded",
-  "Do not compare augustPlan.actual against actuals[aug]: 26 days versus 31.",
+  "  plans.aug.actual  = 1-26 Aug 2026, the only source that states clicks/leads/accounts/funded",
+  "  plans.sep         = full-month Sept 2026 budget plan; states budget, CPL and leads only",
+  "Do not compare plans.aug.actual against actuals[aug]: 26 days versus 31.",
+  "plans.sep is a FULL-MONTH plan while actuals[sep] covers only 1-9 Sept.",
+  "plans.sep is keyed KSA where the workbook writes Saudi Arabia, so it joins with every other block; the original label is kept on that row as sourceLabel.",
+  "plans.sep adds Uruguay, which appears in no actuals file, and budgets no Greece, Norway, Sweden, Netherlands, Kazakhstan, India or Pakistan, all of which the August plan did.",
+  "The September workbook also splits budget and leads by sales team and per head. That is people data and is not carried in this file.",
   "In the plan workbook PPC = Google Search/Bing/Display/Others and SOC = Facebook & Instagram/TikTok/Social Boosting Posts, a wider grouping than the SourceOfTruth tabs.",
   "The Overview tabs are ignored; they are computed from the PPC and Social tabs and the Sept Overview disagrees with its own Social tab on the sign of Jordan's NMI."
  ],
@@ -23,6 +28,10 @@
   {
    "file": "Aug&Sept-ExpectedNumbers.xlsx",
    "window": "plan: full-month Aug 2026; actual: 1-26 Aug 2026"
+  },
+  {
+   "file": "Lead_Distribution_Marketing_Budget_10-09-2026.xlsx",
+   "window": "plan: full-month Sept 2026"
   }
  ],
  "actuals": [
@@ -1715,2065 +1724,2576 @@
    }
   }
  ],
- "augustPlan": {
-  "label": "August 2026 plan vs actual",
-  "planBasis": "Full-month allocated budget per country, Lead Distribution / Marketing Budget plan, 13 Aug 2026",
-  "actualWindow": {
-   "from": "2026-08-01",
-   "to": "2026-08-26"
-  },
-  "source": [
-   "Aug&Sept-ExpectedNumbers.xlsx"
-  ],
-  "assumptions": {
-   "CPC $": {
-    "PPC": 7.0,
-    "Social": 1.0,
-    "basis": "Ronald - specified target"
+ "plans": {
+  "aug": {
+   "label": "August 2026 plan vs actual",
+   "planBasis": "Full-month allocated budget per country, Lead Distribution / Marketing Budget plan, 13 Aug 2026",
+   "actualWindow": {
+    "from": "2026-08-01",
+    "to": "2026-08-26"
    },
-   "CTR %": {
-    "PPC": 0.08,
-    "Social": 0.01,
-    "basis": "WordStream 2026 Google Ads (Finance & Insurance 9.83%) / WordStream 2025 Facebook (Finance & Insurance 0.98%)"
-   },
-   "LPV % (click to landing page view)": {
-    "PPC": 0.85,
-    "Social": 0.72,
-    "basis": "Google Ads click-vs-session guidance / Meta landing-page-view benchmark. Retained as a lever; the LPV row itself is no longer displayed."
-   },
-   "Bounce Rate %": {
-    "PPC": 0.4,
-    "Social": 0.4,
-    "basis": "Ronald - specified target. Drives Expected Leads: Leads = Clicks x (1 - Bounce) x Real Visitors to Leads."
-   },
-   "Real Visitors to Leads %": {
-    "PPC": 0.1,
-    "Social": 0.1,
-    "basis": "Ronald - specified target"
-   },
-   "Leads to Accounts %": {
-    "PPC": 0.35,
-    "Social": 0.35,
-    "basis": "Ronald - specified target"
-   },
-   "Live Account to Funded Account %": {
-    "PPC": 0.3,
-    "Social": 0.25,
-    "basis": "Ronald - specified target (Social 25%)"
-   },
-   "FTD share of total deposits %": {
-    "PPC": 0.4,
-    "Social": 0.4,
-    "basis": "Split of Expected total deposits into FTD vs Re-Deposit"
-   },
-   "Average Account Size - base $": {
-    "PPC": 4000.0,
-    "Social": 4000.0,
-    "basis": "Ronald - specified target; scaled per country (see note below)"
-   },
-   "Reference plan CPL $ (channel avg)": {
-    "PPC": 106.3,
-    "Social": 38.45,
-    "basis": "Lead Distribution - Marketing Budget, 13 Aug 2026"
-   },
-   "Green": {
-    "PPC": null,
-    "Social": null,
-    "basis": "Volume/revenue metrics at 90%+ of plan.   Cost metrics (CPC, CPL, CPA, CPFA) at or below 110% of plan."
-   },
-   "Orange": {
-    "PPC": null,
-    "Social": null,
-    "basis": "Volume/revenue metrics at 60-90% of plan.   Cost metrics at 110-150% of plan."
-   },
-   "Red": {
-    "PPC": null,
-    "Social": null,
-    "basis": "Volume/revenue metrics below 60% of plan.   Cost metrics above 150% of plan."
-   },
-   "No colour": {
-    "PPC": null,
-    "Social": null,
-    "basis": "Spent % (a share, not a target), and any row where Expected or Actual is zero."
-   }
-  },
-  "inputs": {
-   "UAE": {
-    "ISO": "AE",
-    "PPC": {
-     "Budget": 100000.0,
-     "PlanCPL": 135.0
-    },
-    "Social": {
-     "Budget": 50000.0,
-     "PlanCPL": 75.0
-    },
-    "AvgAccountSize": 5100.0
-   },
-   "KSA": {
-    "ISO": "SA",
-    "PPC": {
-     "Budget": 200000.0,
-     "PlanCPL": 110.0
-    },
-    "Social": {
-     "Budget": 100000.0,
-     "PlanCPL": 60.0
-    },
-    "AvgAccountSize": 4150.0
-   },
-   "Qatar": {
-    "ISO": "QA",
-    "PPC": {
-     "Budget": 50000.0,
-     "PlanCPL": 150.0
-    },
-    "Social": {
-     "Budget": 5000.0,
-     "PlanCPL": 85.0
-    },
-    "AvgAccountSize": 5650.0
-   },
-   "Oman": {
-    "ISO": "OM",
-    "PPC": {
-     "Budget": 50000.0,
-     "PlanCPL": 110.0
-    },
-    "Social": {
-     "Budget": 5000.0,
-     "PlanCPL": 55.0
-    },
-    "AvgAccountSize": 4150.0
-   },
-   "Lebanon": {
-    "ISO": "LB",
-    "PPC": {
-     "Budget": 0.0,
-     "PlanCPL": 60.0
-    },
-    "Social": {
-     "Budget": 5000.0,
-     "PlanCPL": 30.0
-    },
-    "AvgAccountSize": 2250.0
-   },
-   "Jordan": {
-    "ISO": "JO",
-    "PPC": {
-     "Budget": 0.0,
-     "PlanCPL": 60.0
-    },
-    "Social": {
-     "Budget": 5000.0,
-     "PlanCPL": 30.0
-    },
-    "AvgAccountSize": 2250.0
-   },
-   "Syria": {
-    "ISO": "SY",
-    "PPC": {
-     "Budget": 0.0,
-     "PlanCPL": 45.0
-    },
-    "Social": {
-     "Budget": 5000.0,
-     "PlanCPL": 20.0
-    },
-    "AvgAccountSize": 1700.0
-   },
-   "Tunisia": {
-    "ISO": "TN",
-    "PPC": {
-     "Budget": 25000.0,
-     "PlanCPL": 55.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 30.0
-    },
-    "AvgAccountSize": 2050.0
-   },
-   "Morocco": {
-    "ISO": "MA",
-    "PPC": {
-     "Budget": 25000.0,
-     "PlanCPL": 55.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 30.0
-    },
-    "AvgAccountSize": 2050.0
-   },
-   "Switzerland": {
-    "ISO": "CH",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 180.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 100.0
-    },
-    "AvgAccountSize": 6750.0
-   },
-   "Spain": {
-    "ISO": "ES",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 120.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 75.0
-    },
-    "AvgAccountSize": 4500.0
-   },
-   "Germany": {
-    "ISO": "DE",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 110.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 75.0
-    },
-    "AvgAccountSize": 4150.0
-   },
-   "Greece": {
-    "ISO": "GR",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 130.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 60.0
-    },
-    "AvgAccountSize": 4900.0
-   },
-   "Norway": {
-    "ISO": "NO",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 150.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 85.0
-    },
-    "AvgAccountSize": 5650.0
-   },
-   "Sweden": {
-    "ISO": "SE",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 140.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 80.0
-    },
-    "AvgAccountSize": 5250.0
-   },
-   "Netherlands": {
-    "ISO": "NL",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 120.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 70.0
-    },
-    "AvgAccountSize": 4500.0
-   },
-   "Poland": {
-    "ISO": "PL",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 130.0
-    },
-    "Social": {
-     "Budget": 12500.0,
-     "PlanCPL": 65.0
-    },
-    "AvgAccountSize": 4900.0
-   },
-   "Turkey": {
-    "ISO": "TR",
-    "PPC": {
-     "Budget": 50000.0,
-     "PlanCPL": 80.0
-    },
-    "Social": {
-     "Budget": 25000.0,
-     "PlanCPL": 40.0
-    },
-    "AvgAccountSize": 3000.0
-   },
-   "Kazakhstan": {
-    "ISO": "KZ",
-    "PPC": {
-     "Budget": 50000.0,
-     "PlanCPL": 80.0
-    },
-    "Social": {
-     "Budget": 25000.0,
-     "PlanCPL": 45.0
-    },
-    "AvgAccountSize": 3000.0
-   },
-   "Canada": {
-    "ISO": "CA",
-    "PPC": {
-     "Budget": 50000.0,
-     "PlanCPL": 130.0
-    },
-    "Social": {
-     "Budget": 25000.0,
-     "PlanCPL": 75.0
-    },
-    "AvgAccountSize": 4900.0
-   },
-   "Australia": {
-    "ISO": "AU",
-    "PPC": {
-     "Budget": 50000.0,
-     "PlanCPL": 145.0
-    },
-    "Social": {
-     "Budget": 0.0,
-     "PlanCPL": 80.0
-    },
-    "AvgAccountSize": 5450.0
-   },
-   "India": {
-    "ISO": "IN",
-    "PPC": {
-     "Budget": 37500.0,
-     "PlanCPL": 60.0
-    },
-    "Social": {
-     "Budget": 93750.0,
-     "PlanCPL": 20.0
-    },
-    "AvgAccountSize": 2250.0
-   },
-   "Pakistan": {
-    "ISO": "PK",
-    "PPC": {
-     "Budget": 12500.0,
-     "PlanCPL": 45.0
-    },
-    "Social": {
-     "Budget": 31250.0,
-     "PlanCPL": 20.0
-    },
-    "AvgAccountSize": 1700.0
-   }
-  },
-  "expected": {
-   "PPC": {
-    "UAE": {
-     "Spent $": 100000.0,
-     "Spent %": 0.1,
-     "Impressions": 178571.42857142858,
-     "Clicks": 14285.714285714286,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 857.1428571428571,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 299.99999999999994,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 89.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 89.99999999999999,
-     "Average Account Size $": 5100.0,
-     "FTD $": 183600.0,
-     "Re-Deposit $": 275399.99999999994,
-     "Total Deposits $": 458999.99999999994,
-     "ROI (NMI)": 4.59
-    },
-    "KSA": {
-     "Spent $": 200000.0,
-     "Spent %": 0.2,
-     "Impressions": 357142.85714285716,
-     "Clicks": 28571.428571428572,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 1714.2857142857142,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 599.9999999999999,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 179.99999999999997,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 179.99999999999997,
-     "Average Account Size $": 4150.0,
-     "FTD $": 298799.99999999994,
-     "Re-Deposit $": 448199.99999999994,
-     "Total Deposits $": 746999.9999999999,
-     "ROI (NMI)": 3.7349999999999994
-    },
-    "Qatar": {
-     "Spent $": 50000.0,
-     "Spent %": 0.05,
-     "Impressions": 89285.71428571429,
-     "Clicks": 7142.857142857143,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 428.57142857142856,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 149.99999999999997,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 44.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 44.99999999999999,
-     "Average Account Size $": 5650.0,
-     "FTD $": 101700.0,
-     "Re-Deposit $": 152549.99999999997,
-     "Total Deposits $": 254249.99999999997,
-     "ROI (NMI)": 5.084999999999999
-    },
-    "Oman": {
-     "Spent $": 50000.0,
-     "Spent %": 0.05,
-     "Impressions": 89285.71428571429,
-     "Clicks": 7142.857142857143,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 428.57142857142856,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 149.99999999999997,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 44.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 44.99999999999999,
-     "Average Account Size $": 4150.0,
-     "FTD $": 74699.99999999999,
-     "Re-Deposit $": 112049.99999999999,
-     "Total Deposits $": 186749.99999999997,
-     "ROI (NMI)": 3.7349999999999994
-    },
-    "Lebanon": {
-     "Spent $": 0.0,
-     "Spent %": 0.0,
-     "Impressions": 0.0,
-     "Clicks": 0.0,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 0.0,
-     "CPL $": 0.0,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 0.0,
-     "CPA $": 0.0,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.0,
-     "Funded Accounts (Aug cohort)": 0.0,
-     "CPFA $": 0.0,
-     "Accounts to Funded %": 0.0,
-     "FTD Accounts (all, non-cohorted)": 0.0,
-     "Average Account Size $": 2250.0,
-     "FTD $": 0.0,
-     "Re-Deposit $": 0.0,
-     "Total Deposits $": 0.0,
-     "ROI (NMI)": 0.0
-    },
-    "Jordan": {
-     "Spent $": 0.0,
-     "Spent %": 0.0,
-     "Impressions": 0.0,
-     "Clicks": 0.0,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 0.0,
-     "CPL $": 0.0,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 0.0,
-     "CPA $": 0.0,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.0,
-     "Funded Accounts (Aug cohort)": 0.0,
-     "CPFA $": 0.0,
-     "Accounts to Funded %": 0.0,
-     "FTD Accounts (all, non-cohorted)": 0.0,
-     "Average Account Size $": 2250.0,
-     "FTD $": 0.0,
-     "Re-Deposit $": 0.0,
-     "Total Deposits $": 0.0,
-     "ROI (NMI)": 0.0
-    },
-    "Syria": {
-     "Spent $": 0.0,
-     "Spent %": 0.0,
-     "Impressions": 0.0,
-     "Clicks": 0.0,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 0.0,
-     "CPL $": 0.0,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 0.0,
-     "CPA $": 0.0,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.0,
-     "Funded Accounts (Aug cohort)": 0.0,
-     "CPFA $": 0.0,
-     "Accounts to Funded %": 0.0,
-     "FTD Accounts (all, non-cohorted)": 0.0,
-     "Average Account Size $": 1700.0,
-     "FTD $": 0.0,
-     "Re-Deposit $": 0.0,
-     "Total Deposits $": 0.0,
-     "ROI (NMI)": 0.0
-    },
-    "Tunisia": {
-     "Spent $": 25000.0,
-     "Spent %": 0.025,
-     "Impressions": 44642.857142857145,
-     "Clicks": 3571.4285714285716,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 214.28571428571428,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 74.99999999999999,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 22.499999999999996,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 22.499999999999996,
-     "Average Account Size $": 2050.0,
-     "FTD $": 18449.999999999996,
-     "Re-Deposit $": 27674.999999999996,
-     "Total Deposits $": 46124.99999999999,
-     "ROI (NMI)": 1.8449999999999998
-    },
-    "Morocco": {
-     "Spent $": 25000.0,
-     "Spent %": 0.025,
-     "Impressions": 44642.857142857145,
-     "Clicks": 3571.4285714285716,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 214.28571428571428,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 74.99999999999999,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 22.499999999999996,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 22.499999999999996,
-     "Average Account Size $": 2050.0,
-     "FTD $": 18449.999999999996,
-     "Re-Deposit $": 27674.999999999996,
-     "Total Deposits $": 46124.99999999999,
-     "ROI (NMI)": 1.8449999999999998
-    },
-    "Switzerland": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 6750.0,
-     "FTD $": 91125.0,
-     "Re-Deposit $": 136687.5,
-     "Total Deposits $": 227812.5,
-     "ROI (NMI)": 6.075
-    },
-    "Spain": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 4500.0,
-     "FTD $": 60750.0,
-     "Re-Deposit $": 91125.0,
-     "Total Deposits $": 151875.0,
-     "ROI (NMI)": 4.05
-    },
-    "Germany": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 4150.0,
-     "FTD $": 56025.0,
-     "Re-Deposit $": 84037.5,
-     "Total Deposits $": 140062.5,
-     "ROI (NMI)": 3.735
-    },
-    "Greece": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 4900.0,
-     "FTD $": 66150.0,
-     "Re-Deposit $": 99225.0,
-     "Total Deposits $": 165375.0,
-     "ROI (NMI)": 4.41
-    },
-    "Norway": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 5650.0,
-     "FTD $": 76275.0,
-     "Re-Deposit $": 114412.5,
-     "Total Deposits $": 190687.5,
-     "ROI (NMI)": 5.085
-    },
-    "Sweden": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 5250.0,
-     "FTD $": 70875.0,
-     "Re-Deposit $": 106312.5,
-     "Total Deposits $": 177187.5,
-     "ROI (NMI)": 4.725
-    },
-    "Netherlands": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 4500.0,
-     "FTD $": 60750.0,
-     "Re-Deposit $": 91125.0,
-     "Total Deposits $": 151875.0,
-     "ROI (NMI)": 4.05
-    },
-    "Poland": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 4900.0,
-     "FTD $": 66150.0,
-     "Re-Deposit $": 99225.0,
-     "Total Deposits $": 165375.0,
-     "ROI (NMI)": 4.41
-    },
-    "Turkey": {
-     "Spent $": 50000.0,
-     "Spent %": 0.05,
-     "Impressions": 89285.71428571429,
-     "Clicks": 7142.857142857143,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 428.57142857142856,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 149.99999999999997,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 44.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 44.99999999999999,
-     "Average Account Size $": 3000.0,
-     "FTD $": 53999.99999999999,
-     "Re-Deposit $": 80999.99999999997,
-     "Total Deposits $": 134999.99999999997,
-     "ROI (NMI)": 2.6999999999999993
-    },
-    "Kazakhstan": {
-     "Spent $": 50000.0,
-     "Spent %": 0.05,
-     "Impressions": 89285.71428571429,
-     "Clicks": 7142.857142857143,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 428.57142857142856,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 149.99999999999997,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 44.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 44.99999999999999,
-     "Average Account Size $": 3000.0,
-     "FTD $": 53999.99999999999,
-     "Re-Deposit $": 80999.99999999997,
-     "Total Deposits $": 134999.99999999997,
-     "ROI (NMI)": 2.6999999999999993
-    },
-    "Canada": {
-     "Spent $": 50000.0,
-     "Spent %": 0.05,
-     "Impressions": 89285.71428571429,
-     "Clicks": 7142.857142857143,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 428.57142857142856,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 149.99999999999997,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 44.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 44.99999999999999,
-     "Average Account Size $": 4900.0,
-     "FTD $": 88200.0,
-     "Re-Deposit $": 132299.99999999997,
-     "Total Deposits $": 220499.99999999997,
-     "ROI (NMI)": 4.409999999999999
-    },
-    "Australia": {
-     "Spent $": 50000.0,
-     "Spent %": 0.05,
-     "Impressions": 89285.71428571429,
-     "Clicks": 7142.857142857143,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 428.57142857142856,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 149.99999999999997,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 44.99999999999999,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 44.99999999999999,
-     "Average Account Size $": 5450.0,
-     "FTD $": 98100.0,
-     "Re-Deposit $": 147149.99999999997,
-     "Total Deposits $": 245249.99999999997,
-     "ROI (NMI)": 4.904999999999999
-    },
-    "India": {
-     "Spent $": 37500.0,
-     "Spent %": 0.0375,
-     "Impressions": 66964.28571428571,
-     "Clicks": 5357.142857142857,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 321.42857142857144,
-     "CPL $": 116.66666666666666,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 112.5,
-     "CPA $": 333.3333333333333,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.105,
-     "Funded Accounts (Aug cohort)": 33.75,
-     "CPFA $": 1111.111111111111,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 33.75,
-     "Average Account Size $": 2250.0,
-     "FTD $": 30375.0,
-     "Re-Deposit $": 45562.5,
-     "Total Deposits $": 75937.5,
-     "ROI (NMI)": 2.025
-    },
-    "Pakistan": {
-     "Spent $": 12500.0,
-     "Spent %": 0.0125,
-     "Impressions": 22321.428571428572,
-     "Clicks": 1785.7142857142858,
-     "CTR %": 0.08,
-     "CPC $": 7.0,
-     "Leads": 107.14285714285714,
-     "CPL $": 116.66666666666667,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 37.49999999999999,
-     "CPA $": 333.33333333333337,
-     "Live Account to Funded Account": 0.3,
-     "Leads to Funded Accounts %": 0.10499999999999998,
-     "Funded Accounts (Aug cohort)": 11.249999999999998,
-     "CPFA $": 1111.1111111111113,
-     "Accounts to Funded %": 0.3,
-     "FTD Accounts (all, non-cohorted)": 11.249999999999998,
-     "Average Account Size $": 1700.0,
-     "FTD $": 7649.999999999999,
-     "Re-Deposit $": 11474.999999999996,
-     "Total Deposits $": 19124.999999999996,
-     "ROI (NMI)": 1.5299999999999998
+   "source": [
+    "Aug&Sept-ExpectedNumbers.xlsx"
+   ],
+   "assumptions": {
+    "CPC $": {
+     "PPC": 7.0,
+     "Social": 1.0,
+     "basis": "Ronald - specified target"
+    },
+    "CTR %": {
+     "PPC": 0.08,
+     "Social": 0.01,
+     "basis": "WordStream 2026 Google Ads (Finance & Insurance 9.83%) / WordStream 2025 Facebook (Finance & Insurance 0.98%)"
+    },
+    "LPV % (click to landing page view)": {
+     "PPC": 0.85,
+     "Social": 0.72,
+     "basis": "Google Ads click-vs-session guidance / Meta landing-page-view benchmark. Retained as a lever; the LPV row itself is no longer displayed."
+    },
+    "Bounce Rate %": {
+     "PPC": 0.4,
+     "Social": 0.4,
+     "basis": "Ronald - specified target. Drives Expected Leads: Leads = Clicks x (1 - Bounce) x Real Visitors to Leads."
+    },
+    "Real Visitors to Leads %": {
+     "PPC": 0.1,
+     "Social": 0.1,
+     "basis": "Ronald - specified target"
+    },
+    "Leads to Accounts %": {
+     "PPC": 0.35,
+     "Social": 0.35,
+     "basis": "Ronald - specified target"
+    },
+    "Live Account to Funded Account %": {
+     "PPC": 0.3,
+     "Social": 0.25,
+     "basis": "Ronald - specified target (Social 25%)"
+    },
+    "FTD share of total deposits %": {
+     "PPC": 0.4,
+     "Social": 0.4,
+     "basis": "Split of Expected total deposits into FTD vs Re-Deposit"
+    },
+    "Average Account Size - base $": {
+     "PPC": 4000.0,
+     "Social": 4000.0,
+     "basis": "Ronald - specified target; scaled per country (see note below)"
+    },
+    "Reference plan CPL $ (channel avg)": {
+     "PPC": 106.3,
+     "Social": 38.45,
+     "basis": "Lead Distribution - Marketing Budget, 13 Aug 2026"
+    },
+    "Green": {
+     "PPC": null,
+     "Social": null,
+     "basis": "Volume/revenue metrics at 90%+ of plan.   Cost metrics (CPC, CPL, CPA, CPFA) at or below 110% of plan."
+    },
+    "Orange": {
+     "PPC": null,
+     "Social": null,
+     "basis": "Volume/revenue metrics at 60-90% of plan.   Cost metrics at 110-150% of plan."
+    },
+    "Red": {
+     "PPC": null,
+     "Social": null,
+     "basis": "Volume/revenue metrics below 60% of plan.   Cost metrics above 150% of plan."
+    },
+    "No colour": {
+     "PPC": null,
+     "Social": null,
+     "basis": "Spent % (a share, not a target), and any row where Expected or Actual is zero."
     }
    },
-   "Social": {
-    "UAE": {
-     "Spent $": 50000.0,
-     "Spent %": 0.1,
-     "Impressions": 5000000.0,
-     "Clicks": 50000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 3000.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 1050.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 262.5,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 262.5,
-     "Average Account Size $": 5100.0,
-     "FTD $": 535500.0,
-     "Re-Deposit $": 803250.0,
-     "Total Deposits $": 1338750.0,
-     "ROI (NMI)": 26.775
-    },
-    "KSA": {
-     "Spent $": 100000.0,
-     "Spent %": 0.2,
-     "Impressions": 10000000.0,
-     "Clicks": 100000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 6000.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 2100.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 525.0,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 525.0,
-     "Average Account Size $": 4150.0,
-     "FTD $": 871500.0,
-     "Re-Deposit $": 1307250.0,
-     "Total Deposits $": 2178750.0,
-     "ROI (NMI)": 21.7875
-    },
-    "Qatar": {
-     "Spent $": 5000.0,
-     "Spent %": 0.01,
-     "Impressions": 500000.0,
-     "Clicks": 5000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 300.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 105.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 26.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 26.25,
-     "Average Account Size $": 5650.0,
-     "FTD $": 59325.0,
-     "Re-Deposit $": 88987.5,
-     "Total Deposits $": 148312.5,
-     "ROI (NMI)": 29.6625
-    },
-    "Oman": {
-     "Spent $": 5000.0,
-     "Spent %": 0.01,
-     "Impressions": 500000.0,
-     "Clicks": 5000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 300.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 105.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 26.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 26.25,
-     "Average Account Size $": 4150.0,
-     "FTD $": 43575.0,
-     "Re-Deposit $": 65362.5,
-     "Total Deposits $": 108937.5,
-     "ROI (NMI)": 21.7875
-    },
-    "Lebanon": {
-     "Spent $": 5000.0,
-     "Spent %": 0.01,
-     "Impressions": 500000.0,
-     "Clicks": 5000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 300.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 105.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 26.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 26.25,
-     "Average Account Size $": 2250.0,
-     "FTD $": 23625.0,
-     "Re-Deposit $": 35437.5,
-     "Total Deposits $": 59062.5,
-     "ROI (NMI)": 11.8125
-    },
-    "Jordan": {
-     "Spent $": 5000.0,
-     "Spent %": 0.01,
-     "Impressions": 500000.0,
-     "Clicks": 5000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 300.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 105.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 26.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 26.25,
-     "Average Account Size $": 2250.0,
-     "FTD $": 23625.0,
-     "Re-Deposit $": 35437.5,
-     "Total Deposits $": 59062.5,
-     "ROI (NMI)": 11.8125
-    },
-    "Syria": {
-     "Spent $": 5000.0,
-     "Spent %": 0.01,
-     "Impressions": 500000.0,
-     "Clicks": 5000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 300.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 105.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 26.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 26.25,
-     "Average Account Size $": 1700.0,
-     "FTD $": 17850.0,
-     "Re-Deposit $": 26775.0,
-     "Total Deposits $": 44625.0,
-     "ROI (NMI)": 8.925
-    },
-    "Tunisia": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 2050.0,
-     "FTD $": 53812.5,
-     "Re-Deposit $": 80718.75,
-     "Total Deposits $": 134531.25,
-     "ROI (NMI)": 10.7625
-    },
-    "Morocco": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 2050.0,
-     "FTD $": 53812.5,
-     "Re-Deposit $": 80718.75,
-     "Total Deposits $": 134531.25,
-     "ROI (NMI)": 10.7625
-    },
-    "Switzerland": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 6750.0,
-     "FTD $": 177187.5,
-     "Re-Deposit $": 265781.25,
-     "Total Deposits $": 442968.75,
-     "ROI (NMI)": 35.4375
-    },
-    "Spain": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 4500.0,
-     "FTD $": 118125.0,
-     "Re-Deposit $": 177187.5,
-     "Total Deposits $": 295312.5,
-     "ROI (NMI)": 23.625
-    },
-    "Germany": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 4150.0,
-     "FTD $": 108937.5,
-     "Re-Deposit $": 163406.25,
-     "Total Deposits $": 272343.75,
-     "ROI (NMI)": 21.7875
-    },
-    "Greece": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 4900.0,
-     "FTD $": 128625.0,
-     "Re-Deposit $": 192937.5,
-     "Total Deposits $": 321562.5,
-     "ROI (NMI)": 25.725
-    },
-    "Norway": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 5650.0,
-     "FTD $": 148312.5,
-     "Re-Deposit $": 222468.75,
-     "Total Deposits $": 370781.25,
-     "ROI (NMI)": 29.6625
-    },
-    "Sweden": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 5250.0,
-     "FTD $": 137812.5,
-     "Re-Deposit $": 206718.75,
-     "Total Deposits $": 344531.25,
-     "ROI (NMI)": 27.5625
-    },
-    "Netherlands": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 4500.0,
-     "FTD $": 118125.0,
-     "Re-Deposit $": 177187.5,
-     "Total Deposits $": 295312.5,
-     "ROI (NMI)": 23.625
-    },
-    "Poland": {
-     "Spent $": 12500.0,
-     "Spent %": 0.025,
-     "Impressions": 1250000.0,
-     "Clicks": 12500.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 750.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 262.5,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 65.625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 65.625,
-     "Average Account Size $": 4900.0,
-     "FTD $": 128625.0,
-     "Re-Deposit $": 192937.5,
-     "Total Deposits $": 321562.5,
-     "ROI (NMI)": 25.725
-    },
-    "Turkey": {
-     "Spent $": 25000.0,
-     "Spent %": 0.05,
-     "Impressions": 2500000.0,
-     "Clicks": 25000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 1500.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 525.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 131.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 131.25,
-     "Average Account Size $": 3000.0,
-     "FTD $": 157500.0,
-     "Re-Deposit $": 236250.0,
-     "Total Deposits $": 393750.0,
-     "ROI (NMI)": 15.75
-    },
-    "Kazakhstan": {
-     "Spent $": 25000.0,
-     "Spent %": 0.05,
-     "Impressions": 2500000.0,
-     "Clicks": 25000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 1500.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 525.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 131.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 131.25,
-     "Average Account Size $": 3000.0,
-     "FTD $": 157500.0,
-     "Re-Deposit $": 236250.0,
-     "Total Deposits $": 393750.0,
-     "ROI (NMI)": 15.75
-    },
-    "Canada": {
-     "Spent $": 25000.0,
-     "Spent %": 0.05,
-     "Impressions": 2500000.0,
-     "Clicks": 25000.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 1500.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 525.0,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 131.25,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 131.25,
-     "Average Account Size $": 4900.0,
-     "FTD $": 257250.0,
-     "Re-Deposit $": 385875.0,
-     "Total Deposits $": 643125.0,
-     "ROI (NMI)": 25.725
-    },
-    "Australia": {
-     "Spent $": 0.0,
-     "Spent %": 0.0,
-     "Impressions": 0.0,
-     "Clicks": 0.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 0.0,
-     "CPL $": 0.0,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 0.0,
-     "CPA $": 0.0,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0,
-     "Funded Accounts (Aug cohort)": 0.0,
-     "CPFA $": 0.0,
-     "Accounts to Funded %": 0.0,
-     "FTD Accounts (all, non-cohorted)": 0.0,
-     "Average Account Size $": 5450.0,
-     "FTD $": 0.0,
-     "Re-Deposit $": 0.0,
-     "Total Deposits $": 0.0,
-     "ROI (NMI)": 0.0
-    },
-    "India": {
-     "Spent $": 93750.0,
-     "Spent %": 0.1875,
-     "Impressions": 9375000.0,
-     "Clicks": 93750.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 5625.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 1968.7499999999998,
-     "CPA $": 47.61904761904763,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 492.18749999999994,
-     "CPFA $": 190.4761904761905,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 492.18749999999994,
-     "Average Account Size $": 2250.0,
-     "FTD $": 442968.74999999994,
-     "Re-Deposit $": 664453.1249999998,
-     "Total Deposits $": 1107421.8749999998,
-     "ROI (NMI)": 11.812499999999998
-    },
-    "Pakistan": {
-     "Spent $": 31250.0,
-     "Spent %": 0.0625,
-     "Impressions": 3125000.0,
-     "Clicks": 31250.0,
-     "CTR %": 0.01,
-     "CPC $": 1.0,
-     "Leads": 1875.0,
-     "CPL $": 16.666666666666668,
-     "Leads to Accounts %": 0.35,
-     "Live Accounts": 656.25,
-     "CPA $": 47.61904761904762,
-     "Live Account to Funded Account": 0.25,
-     "Leads to Funded Accounts %": 0.0875,
-     "Funded Accounts (Aug cohort)": 164.0625,
-     "CPFA $": 190.47619047619048,
-     "Accounts to Funded %": 0.25,
-     "FTD Accounts (all, non-cohorted)": 164.0625,
-     "Average Account Size $": 1700.0,
-     "FTD $": 111562.5,
-     "Re-Deposit $": 167343.75,
-     "Total Deposits $": 278906.25,
-     "ROI (NMI)": 8.925
-    }
-   }
-  },
-  "actual": {
-   "UAE": {
-    "PPC": {
-     "Spend": 42331.56,
-     "Clicks": 4809.0,
-     "Impressions": 153609.0,
-     "Leads": 159.0,
-     "LiveAccounts": 68.0,
-     "FundedAccounts": 8.0,
-     "TotalDeposits": 1057900.0,
-     "FTD": 16066.0,
-     "FTDAccounts": 16.0
-    },
-    "Social": {
-     "Spend": 12306.02,
-     "Clicks": 6414.0,
-     "Impressions": 2608318.0,
-     "Leads": 49.0,
-     "LiveAccounts": 23.0,
-     "FundedAccounts": 2.0,
-     "TotalDeposits": 170339.0,
-     "FTD": 101.0,
-     "FTDAccounts": 2.0
-    }
-   },
-   "KSA": {
-    "PPC": {
-     "Spend": 25625.76,
-     "Clicks": 4917.0,
-     "Impressions": 68257.0,
-     "Leads": 184.0,
-     "LiveAccounts": 62.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 21250.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 11880.69,
-     "Clicks": 16268.0,
-     "Impressions": 5695022.0,
-     "Leads": 93.0,
-     "LiveAccounts": 28.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 575.0,
-     "FTD": 100.0,
-     "FTDAccounts": 1.0
-    }
-   },
-   "Qatar": {
-    "PPC": {
-     "Spend": 8330.35,
-     "Clicks": 1423.0,
-     "Impressions": 22897.0,
-     "Leads": 81.0,
-     "LiveAccounts": 23.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 50.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 2851.25,
-     "Clicks": 3239.0,
-     "Impressions": 1023828.0,
-     "Leads": 15.0,
-     "LiveAccounts": 6.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Oman": {
-    "PPC": {
-     "Spend": 4629.62,
-     "Clicks": 646.0,
-     "Impressions": 7616.0,
-     "Leads": 36.0,
-     "LiveAccounts": 9.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 2337.56,
-     "Clicks": 2923.0,
-     "Impressions": 791745.0,
-     "Leads": 24.0,
-     "LiveAccounts": 5.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 350.0,
-     "FTD": 50.0,
-     "FTDAccounts": 1.0
-    }
-   },
-   "Lebanon": {
-    "PPC": {
-     "Spend": 0.0,
-     "Clicks": 0.0,
-     "Impressions": 0.0,
-     "Leads": 1.0,
-     "LiveAccounts": 0.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 2896.1,
-     "Clicks": 4199.0,
-     "Impressions": 997116.0,
-     "Leads": 57.0,
-     "LiveAccounts": 23.0,
-     "FundedAccounts": 2.0,
-     "TotalDeposits": 954.0,
-     "FTD": 273.0,
-     "FTDAccounts": 2.0
-    }
-   },
-   "Jordan": {
-    "PPC": {
-     "Spend": 0.0,
-     "Clicks": 0.0,
-     "Impressions": 0.0,
-     "Leads": 1.0,
-     "LiveAccounts": 0.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 3453.04,
-     "Clicks": 6236.0,
-     "Impressions": 1290061.0,
-     "Leads": 64.0,
-     "LiveAccounts": 26.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 1357.0,
-     "FTD": 50.0,
-     "FTDAccounts": 1.0
-    }
-   },
-   "Syria": {
-    "PPC": {
-     "Spend": 0.0,
-     "Clicks": 0.0,
-     "Impressions": 0.0,
-     "Leads": 4.0,
-     "LiveAccounts": 2.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 100.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 1188.51,
-     "Clicks": 8653.0,
-     "Impressions": 1161048.0,
-     "Leads": 392.0,
-     "LiveAccounts": 154.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 50.0,
-     "FTD": 50.0,
-     "FTDAccounts": 1.0
-    }
-   },
-   "Tunisia": {
-    "PPC": {
-     "Spend": 9238.95,
-     "Clicks": 745.0,
-     "Impressions": 6668.0,
-     "Leads": 37.0,
-     "LiveAccounts": 11.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 4328.61,
-     "Clicks": 19169.0,
-     "Impressions": 3497818.0,
-     "Leads": 165.0,
-     "LiveAccounts": 51.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 282.0,
-     "FTD": 282.0,
-     "FTDAccounts": 2.0
-    }
-   },
-   "Morocco": {
-    "PPC": {
-     "Spend": 9579.69,
-     "Clicks": 1604.0,
-     "Impressions": 13703.0,
-     "Leads": 162.0,
-     "LiveAccounts": 49.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 350.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 4262.24,
-     "Clicks": 17584.0,
-     "Impressions": 2739865.0,
-     "Leads": 366.0,
-     "LiveAccounts": 114.0,
-     "FundedAccounts": 4.0,
-     "TotalDeposits": 10787.0,
-     "FTD": 1586.0,
-     "FTDAccounts": 9.0
-    }
-   },
-   "Switzerland": {
-    "PPC": {
-     "Spend": 7490.6,
-     "Clicks": 708.0,
-     "Impressions": 15962.0,
-     "Leads": 19.0,
-     "LiveAccounts": 3.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 3366.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 1918.37,
-     "Clicks": 281.0,
-     "Impressions": 65022.0,
-     "Leads": 8.0,
-     "LiveAccounts": 2.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Spain": {
-    "PPC": {
-     "Spend": 10364.7,
-     "Clicks": 1634.0,
-     "Impressions": 52080.0,
-     "Leads": 139.0,
-     "LiveAccounts": 42.0,
-     "FundedAccounts": 3.0,
-     "TotalDeposits": 30927.0,
-     "FTD": 491.0,
-     "FTDAccounts": 3.0
-    },
-    "Social": {
-     "Spend": 5481.28,
-     "Clicks": 1896.0,
-     "Impressions": 357698.0,
-     "Leads": 60.0,
-     "LiveAccounts": 23.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 115.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Germany": {
-    "PPC": {
-     "Spend": 17084.83,
-     "Clicks": 2103.0,
-     "Impressions": 81335.0,
-     "Leads": 92.0,
-     "LiveAccounts": 27.0,
-     "FundedAccounts": 4.0,
-     "TotalDeposits": 13815.0,
-     "FTD": 1133.0,
-     "FTDAccounts": 5.0
-    },
-    "Social": {
-     "Spend": 4317.27,
-     "Clicks": 821.0,
-     "Impressions": 127403.0,
-     "Leads": 41.0,
-     "LiveAccounts": 18.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Greece": {
-    "PPC": {
-     "Spend": 4632.48,
-     "Clicks": 863.0,
-     "Impressions": 20837.0,
-     "Leads": 32.0,
-     "LiveAccounts": 15.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 50.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 5475.12,
-     "Clicks": 2935.0,
-     "Impressions": 789465.0,
-     "Leads": 54.0,
-     "LiveAccounts": 17.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Norway": {
-    "PPC": {
-     "Spend": 4627.32,
-     "Clicks": 227.0,
-     "Impressions": 5200.0,
-     "Leads": 11.0,
-     "LiveAccounts": 3.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 2547.76,
-     "Clicks": 427.0,
-     "Impressions": 68965.0,
-     "Leads": 16.0,
-     "LiveAccounts": 3.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Sweden": {
-    "PPC": {
-     "Spend": 4558.24,
-     "Clicks": 515.0,
-     "Impressions": 11110.0,
-     "Leads": 22.0,
-     "LiveAccounts": 5.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 2022.34,
-     "Clicks": 408.0,
-     "Impressions": 68644.0,
-     "Leads": 8.0,
-     "LiveAccounts": 3.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Netherlands": {
-    "PPC": {
-     "Spend": 4672.74,
-     "Clicks": 509.0,
-     "Impressions": 10603.0,
-     "Leads": 17.0,
-     "LiveAccounts": 9.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 350.0,
-     "FTD": 350.0,
-     "FTDAccounts": 1.0
-    },
-    "Social": {
-     "Spend": 2586.68,
-     "Clicks": 452.0,
-     "Impressions": 67331.0,
-     "Leads": 18.0,
-     "LiveAccounts": 5.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Poland": {
-    "PPC": {
-     "Spend": 4769.95,
-     "Clicks": 785.0,
-     "Impressions": 22798.0,
-     "Leads": 16.0,
-     "LiveAccounts": 3.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 2370.83,
-     "Clicks": 537.0,
-     "Impressions": 104980.0,
-     "Leads": 21.0,
-     "LiveAccounts": 7.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Turkey": {
-    "PPC": {
-     "Spend": 3386.23,
-     "Clicks": 1959.0,
-     "Impressions": 54594.0,
-     "Leads": 6.0,
-     "LiveAccounts": 1.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 11687.0,
-     "FTD": 4022.0,
-     "FTDAccounts": 1.0
-    },
-    "Social": {
-     "Spend": 5100.95,
-     "Clicks": 3101.0,
-     "Impressions": 661555.0,
-     "Leads": 81.0,
-     "LiveAccounts": 26.0,
-     "FundedAccounts": 2.0,
-     "TotalDeposits": 6470.0,
-     "FTD": 2003.0,
-     "FTDAccounts": 2.0
-    }
-   },
-   "Kazakhstan": {
-    "PPC": {
-     "Spend": 2781.6,
-     "Clicks": 236.0,
-     "Impressions": 3036.0,
-     "Leads": 25.0,
-     "LiveAccounts": 6.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 3938.79,
-     "Clicks": 1317.0,
-     "Impressions": 285461.0,
-     "Leads": 44.0,
-     "LiveAccounts": 13.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Canada": {
-    "PPC": {
-     "Spend": 16939.6,
-     "Clicks": 851.0,
-     "Impressions": 24820.0,
-     "Leads": 53.0,
-     "LiveAccounts": 25.0,
-     "FundedAccounts": 5.0,
-     "TotalDeposits": 38562.0,
-     "FTD": 460.0,
-     "FTDAccounts": 6.0
-    },
-    "Social": {
-     "Spend": 5830.24,
-     "Clicks": 1472.0,
-     "Impressions": 225104.0,
-     "Leads": 53.0,
-     "LiveAccounts": 20.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 3256.0,
-     "FTD": 72.0,
-     "FTDAccounts": 1.0
-    }
-   },
-   "Australia": {
-    "PPC": {
-     "Spend": 13902.07,
-     "Clicks": 933.0,
-     "Impressions": 41271.0,
-     "Leads": 49.0,
-     "LiveAccounts": 21.0,
-     "FundedAccounts": 7.0,
-     "TotalDeposits": 54962.0,
-     "FTD": 896.0,
-     "FTDAccounts": 9.0
-    },
-    "Social": {
-     "Spend": 2406.86,
-     "Clicks": 511.0,
-     "Impressions": 81333.0,
-     "Leads": 34.0,
-     "LiveAccounts": 12.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 1203.0,
-     "FTD": 35.0,
-     "FTDAccounts": 1.0
-    }
-   },
-   "India": {
-    "PPC": {
-     "Spend": 4693.3,
-     "Clicks": 1073.0,
-     "Impressions": 13139.0,
-     "Leads": 84.0,
-     "LiveAccounts": 21.0,
-     "FundedAccounts": 1.0,
-     "TotalDeposits": 8869.0,
-     "FTD": 100.0,
-     "FTDAccounts": 1.0
-    },
-    "Social": {
-     "Spend": 0.0,
-     "Clicks": 0.0,
-     "Impressions": 0.0,
-     "Leads": 4.0,
-     "LiveAccounts": 2.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 2907.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   },
-   "Pakistan": {
-    "PPC": {
-     "Spend": 4656.84,
-     "Clicks": 3247.0,
-     "Impressions": 18639.0,
-     "Leads": 401.0,
-     "LiveAccounts": 120.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    },
-    "Social": {
-     "Spend": 5662.45,
-     "Clicks": 17211.0,
-     "Impressions": 3323437.0,
-     "Leads": 324.0,
-     "LiveAccounts": 111.0,
-     "FundedAccounts": 0.0,
-     "TotalDeposits": 0.0,
-     "FTD": 0.0,
-     "FTDAccounts": 0.0
-    }
-   }
-  },
-  "totals": {
    "inputs": {
-    "ISO": null,
+    "UAE": {
+     "ISO": "AE",
+     "PPC": {
+      "Budget": 100000.0,
+      "PlanCPL": 135.0
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "PlanCPL": 75.0
+     },
+     "AvgAccountSize": 5100.0
+    },
+    "KSA": {
+     "ISO": "SA",
+     "PPC": {
+      "Budget": 200000.0,
+      "PlanCPL": 110.0
+     },
+     "Social": {
+      "Budget": 100000.0,
+      "PlanCPL": 60.0
+     },
+     "AvgAccountSize": 4150.0
+    },
+    "Qatar": {
+     "ISO": "QA",
+     "PPC": {
+      "Budget": 50000.0,
+      "PlanCPL": 150.0
+     },
+     "Social": {
+      "Budget": 5000.0,
+      "PlanCPL": 85.0
+     },
+     "AvgAccountSize": 5650.0
+    },
+    "Oman": {
+     "ISO": "OM",
+     "PPC": {
+      "Budget": 50000.0,
+      "PlanCPL": 110.0
+     },
+     "Social": {
+      "Budget": 5000.0,
+      "PlanCPL": 55.0
+     },
+     "AvgAccountSize": 4150.0
+    },
+    "Lebanon": {
+     "ISO": "LB",
+     "PPC": {
+      "Budget": 0.0,
+      "PlanCPL": 60.0
+     },
+     "Social": {
+      "Budget": 5000.0,
+      "PlanCPL": 30.0
+     },
+     "AvgAccountSize": 2250.0
+    },
+    "Jordan": {
+     "ISO": "JO",
+     "PPC": {
+      "Budget": 0.0,
+      "PlanCPL": 60.0
+     },
+     "Social": {
+      "Budget": 5000.0,
+      "PlanCPL": 30.0
+     },
+     "AvgAccountSize": 2250.0
+    },
+    "Syria": {
+     "ISO": "SY",
+     "PPC": {
+      "Budget": 0.0,
+      "PlanCPL": 45.0
+     },
+     "Social": {
+      "Budget": 5000.0,
+      "PlanCPL": 20.0
+     },
+     "AvgAccountSize": 1700.0
+    },
+    "Tunisia": {
+     "ISO": "TN",
+     "PPC": {
+      "Budget": 25000.0,
+      "PlanCPL": 55.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 30.0
+     },
+     "AvgAccountSize": 2050.0
+    },
+    "Morocco": {
+     "ISO": "MA",
+     "PPC": {
+      "Budget": 25000.0,
+      "PlanCPL": 55.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 30.0
+     },
+     "AvgAccountSize": 2050.0
+    },
+    "Switzerland": {
+     "ISO": "CH",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 180.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 100.0
+     },
+     "AvgAccountSize": 6750.0
+    },
+    "Spain": {
+     "ISO": "ES",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 120.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 75.0
+     },
+     "AvgAccountSize": 4500.0
+    },
+    "Germany": {
+     "ISO": "DE",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 110.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 75.0
+     },
+     "AvgAccountSize": 4150.0
+    },
+    "Greece": {
+     "ISO": "GR",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 130.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 60.0
+     },
+     "AvgAccountSize": 4900.0
+    },
+    "Norway": {
+     "ISO": "NO",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 150.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 85.0
+     },
+     "AvgAccountSize": 5650.0
+    },
+    "Sweden": {
+     "ISO": "SE",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 140.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 80.0
+     },
+     "AvgAccountSize": 5250.0
+    },
+    "Netherlands": {
+     "ISO": "NL",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 120.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 70.0
+     },
+     "AvgAccountSize": 4500.0
+    },
+    "Poland": {
+     "ISO": "PL",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 130.0
+     },
+     "Social": {
+      "Budget": 12500.0,
+      "PlanCPL": 65.0
+     },
+     "AvgAccountSize": 4900.0
+    },
+    "Turkey": {
+     "ISO": "TR",
+     "PPC": {
+      "Budget": 50000.0,
+      "PlanCPL": 80.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "PlanCPL": 40.0
+     },
+     "AvgAccountSize": 3000.0
+    },
+    "Kazakhstan": {
+     "ISO": "KZ",
+     "PPC": {
+      "Budget": 50000.0,
+      "PlanCPL": 80.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "PlanCPL": 45.0
+     },
+     "AvgAccountSize": 3000.0
+    },
+    "Canada": {
+     "ISO": "CA",
+     "PPC": {
+      "Budget": 50000.0,
+      "PlanCPL": 130.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "PlanCPL": 75.0
+     },
+     "AvgAccountSize": 4900.0
+    },
+    "Australia": {
+     "ISO": "AU",
+     "PPC": {
+      "Budget": 50000.0,
+      "PlanCPL": 145.0
+     },
+     "Social": {
+      "Budget": 0.0,
+      "PlanCPL": 80.0
+     },
+     "AvgAccountSize": 5450.0
+    },
+    "India": {
+     "ISO": "IN",
+     "PPC": {
+      "Budget": 37500.0,
+      "PlanCPL": 60.0
+     },
+     "Social": {
+      "Budget": 93750.0,
+      "PlanCPL": 20.0
+     },
+     "AvgAccountSize": 2250.0
+    },
+    "Pakistan": {
+     "ISO": "PK",
+     "PPC": {
+      "Budget": 12500.0,
+      "PlanCPL": 45.0
+     },
+     "Social": {
+      "Budget": 31250.0,
+      "PlanCPL": 20.0
+     },
+     "AvgAccountSize": 1700.0
+    }
+   },
+   "expected": {
     "PPC": {
-     "Budget": 1000000.0,
-     "PlanCPL": null
+     "UAE": {
+      "Spent $": 100000.0,
+      "Spent %": 0.1,
+      "Impressions": 178571.42857142858,
+      "Clicks": 14285.714285714286,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 857.1428571428571,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 299.99999999999994,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 89.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 89.99999999999999,
+      "Average Account Size $": 5100.0,
+      "FTD $": 183600.0,
+      "Re-Deposit $": 275399.99999999994,
+      "Total Deposits $": 458999.99999999994,
+      "ROI (NMI)": 4.59
+     },
+     "KSA": {
+      "Spent $": 200000.0,
+      "Spent %": 0.2,
+      "Impressions": 357142.85714285716,
+      "Clicks": 28571.428571428572,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 1714.2857142857142,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 599.9999999999999,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 179.99999999999997,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 179.99999999999997,
+      "Average Account Size $": 4150.0,
+      "FTD $": 298799.99999999994,
+      "Re-Deposit $": 448199.99999999994,
+      "Total Deposits $": 746999.9999999999,
+      "ROI (NMI)": 3.7349999999999994
+     },
+     "Qatar": {
+      "Spent $": 50000.0,
+      "Spent %": 0.05,
+      "Impressions": 89285.71428571429,
+      "Clicks": 7142.857142857143,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 428.57142857142856,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 149.99999999999997,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 44.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 44.99999999999999,
+      "Average Account Size $": 5650.0,
+      "FTD $": 101700.0,
+      "Re-Deposit $": 152549.99999999997,
+      "Total Deposits $": 254249.99999999997,
+      "ROI (NMI)": 5.084999999999999
+     },
+     "Oman": {
+      "Spent $": 50000.0,
+      "Spent %": 0.05,
+      "Impressions": 89285.71428571429,
+      "Clicks": 7142.857142857143,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 428.57142857142856,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 149.99999999999997,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 44.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 44.99999999999999,
+      "Average Account Size $": 4150.0,
+      "FTD $": 74699.99999999999,
+      "Re-Deposit $": 112049.99999999999,
+      "Total Deposits $": 186749.99999999997,
+      "ROI (NMI)": 3.7349999999999994
+     },
+     "Lebanon": {
+      "Spent $": 0.0,
+      "Spent %": 0.0,
+      "Impressions": 0.0,
+      "Clicks": 0.0,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 0.0,
+      "CPL $": 0.0,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 0.0,
+      "CPA $": 0.0,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.0,
+      "Funded Accounts (Aug cohort)": 0.0,
+      "CPFA $": 0.0,
+      "Accounts to Funded %": 0.0,
+      "FTD Accounts (all, non-cohorted)": 0.0,
+      "Average Account Size $": 2250.0,
+      "FTD $": 0.0,
+      "Re-Deposit $": 0.0,
+      "Total Deposits $": 0.0,
+      "ROI (NMI)": 0.0
+     },
+     "Jordan": {
+      "Spent $": 0.0,
+      "Spent %": 0.0,
+      "Impressions": 0.0,
+      "Clicks": 0.0,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 0.0,
+      "CPL $": 0.0,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 0.0,
+      "CPA $": 0.0,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.0,
+      "Funded Accounts (Aug cohort)": 0.0,
+      "CPFA $": 0.0,
+      "Accounts to Funded %": 0.0,
+      "FTD Accounts (all, non-cohorted)": 0.0,
+      "Average Account Size $": 2250.0,
+      "FTD $": 0.0,
+      "Re-Deposit $": 0.0,
+      "Total Deposits $": 0.0,
+      "ROI (NMI)": 0.0
+     },
+     "Syria": {
+      "Spent $": 0.0,
+      "Spent %": 0.0,
+      "Impressions": 0.0,
+      "Clicks": 0.0,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 0.0,
+      "CPL $": 0.0,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 0.0,
+      "CPA $": 0.0,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.0,
+      "Funded Accounts (Aug cohort)": 0.0,
+      "CPFA $": 0.0,
+      "Accounts to Funded %": 0.0,
+      "FTD Accounts (all, non-cohorted)": 0.0,
+      "Average Account Size $": 1700.0,
+      "FTD $": 0.0,
+      "Re-Deposit $": 0.0,
+      "Total Deposits $": 0.0,
+      "ROI (NMI)": 0.0
+     },
+     "Tunisia": {
+      "Spent $": 25000.0,
+      "Spent %": 0.025,
+      "Impressions": 44642.857142857145,
+      "Clicks": 3571.4285714285716,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 214.28571428571428,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 74.99999999999999,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 22.499999999999996,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 22.499999999999996,
+      "Average Account Size $": 2050.0,
+      "FTD $": 18449.999999999996,
+      "Re-Deposit $": 27674.999999999996,
+      "Total Deposits $": 46124.99999999999,
+      "ROI (NMI)": 1.8449999999999998
+     },
+     "Morocco": {
+      "Spent $": 25000.0,
+      "Spent %": 0.025,
+      "Impressions": 44642.857142857145,
+      "Clicks": 3571.4285714285716,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 214.28571428571428,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 74.99999999999999,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 22.499999999999996,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 22.499999999999996,
+      "Average Account Size $": 2050.0,
+      "FTD $": 18449.999999999996,
+      "Re-Deposit $": 27674.999999999996,
+      "Total Deposits $": 46124.99999999999,
+      "ROI (NMI)": 1.8449999999999998
+     },
+     "Switzerland": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 6750.0,
+      "FTD $": 91125.0,
+      "Re-Deposit $": 136687.5,
+      "Total Deposits $": 227812.5,
+      "ROI (NMI)": 6.075
+     },
+     "Spain": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 4500.0,
+      "FTD $": 60750.0,
+      "Re-Deposit $": 91125.0,
+      "Total Deposits $": 151875.0,
+      "ROI (NMI)": 4.05
+     },
+     "Germany": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 4150.0,
+      "FTD $": 56025.0,
+      "Re-Deposit $": 84037.5,
+      "Total Deposits $": 140062.5,
+      "ROI (NMI)": 3.735
+     },
+     "Greece": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 4900.0,
+      "FTD $": 66150.0,
+      "Re-Deposit $": 99225.0,
+      "Total Deposits $": 165375.0,
+      "ROI (NMI)": 4.41
+     },
+     "Norway": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 5650.0,
+      "FTD $": 76275.0,
+      "Re-Deposit $": 114412.5,
+      "Total Deposits $": 190687.5,
+      "ROI (NMI)": 5.085
+     },
+     "Sweden": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 5250.0,
+      "FTD $": 70875.0,
+      "Re-Deposit $": 106312.5,
+      "Total Deposits $": 177187.5,
+      "ROI (NMI)": 4.725
+     },
+     "Netherlands": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 4500.0,
+      "FTD $": 60750.0,
+      "Re-Deposit $": 91125.0,
+      "Total Deposits $": 151875.0,
+      "ROI (NMI)": 4.05
+     },
+     "Poland": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 4900.0,
+      "FTD $": 66150.0,
+      "Re-Deposit $": 99225.0,
+      "Total Deposits $": 165375.0,
+      "ROI (NMI)": 4.41
+     },
+     "Turkey": {
+      "Spent $": 50000.0,
+      "Spent %": 0.05,
+      "Impressions": 89285.71428571429,
+      "Clicks": 7142.857142857143,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 428.57142857142856,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 149.99999999999997,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 44.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 44.99999999999999,
+      "Average Account Size $": 3000.0,
+      "FTD $": 53999.99999999999,
+      "Re-Deposit $": 80999.99999999997,
+      "Total Deposits $": 134999.99999999997,
+      "ROI (NMI)": 2.6999999999999993
+     },
+     "Kazakhstan": {
+      "Spent $": 50000.0,
+      "Spent %": 0.05,
+      "Impressions": 89285.71428571429,
+      "Clicks": 7142.857142857143,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 428.57142857142856,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 149.99999999999997,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 44.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 44.99999999999999,
+      "Average Account Size $": 3000.0,
+      "FTD $": 53999.99999999999,
+      "Re-Deposit $": 80999.99999999997,
+      "Total Deposits $": 134999.99999999997,
+      "ROI (NMI)": 2.6999999999999993
+     },
+     "Canada": {
+      "Spent $": 50000.0,
+      "Spent %": 0.05,
+      "Impressions": 89285.71428571429,
+      "Clicks": 7142.857142857143,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 428.57142857142856,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 149.99999999999997,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 44.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 44.99999999999999,
+      "Average Account Size $": 4900.0,
+      "FTD $": 88200.0,
+      "Re-Deposit $": 132299.99999999997,
+      "Total Deposits $": 220499.99999999997,
+      "ROI (NMI)": 4.409999999999999
+     },
+     "Australia": {
+      "Spent $": 50000.0,
+      "Spent %": 0.05,
+      "Impressions": 89285.71428571429,
+      "Clicks": 7142.857142857143,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 428.57142857142856,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 149.99999999999997,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 44.99999999999999,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 44.99999999999999,
+      "Average Account Size $": 5450.0,
+      "FTD $": 98100.0,
+      "Re-Deposit $": 147149.99999999997,
+      "Total Deposits $": 245249.99999999997,
+      "ROI (NMI)": 4.904999999999999
+     },
+     "India": {
+      "Spent $": 37500.0,
+      "Spent %": 0.0375,
+      "Impressions": 66964.28571428571,
+      "Clicks": 5357.142857142857,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 321.42857142857144,
+      "CPL $": 116.66666666666666,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 112.5,
+      "CPA $": 333.3333333333333,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.105,
+      "Funded Accounts (Aug cohort)": 33.75,
+      "CPFA $": 1111.111111111111,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 33.75,
+      "Average Account Size $": 2250.0,
+      "FTD $": 30375.0,
+      "Re-Deposit $": 45562.5,
+      "Total Deposits $": 75937.5,
+      "ROI (NMI)": 2.025
+     },
+     "Pakistan": {
+      "Spent $": 12500.0,
+      "Spent %": 0.0125,
+      "Impressions": 22321.428571428572,
+      "Clicks": 1785.7142857142858,
+      "CTR %": 0.08,
+      "CPC $": 7.0,
+      "Leads": 107.14285714285714,
+      "CPL $": 116.66666666666667,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 37.49999999999999,
+      "CPA $": 333.33333333333337,
+      "Live Account to Funded Account": 0.3,
+      "Leads to Funded Accounts %": 0.10499999999999998,
+      "Funded Accounts (Aug cohort)": 11.249999999999998,
+      "CPFA $": 1111.1111111111113,
+      "Accounts to Funded %": 0.3,
+      "FTD Accounts (all, non-cohorted)": 11.249999999999998,
+      "Average Account Size $": 1700.0,
+      "FTD $": 7649.999999999999,
+      "Re-Deposit $": 11474.999999999996,
+      "Total Deposits $": 19124.999999999996,
+      "ROI (NMI)": 1.5299999999999998
+     }
     },
     "Social": {
-     "Budget": 500000.0,
-     "PlanCPL": null
-    },
-    "AvgAccountSize": null
+     "UAE": {
+      "Spent $": 50000.0,
+      "Spent %": 0.1,
+      "Impressions": 5000000.0,
+      "Clicks": 50000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 3000.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 1050.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 262.5,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 262.5,
+      "Average Account Size $": 5100.0,
+      "FTD $": 535500.0,
+      "Re-Deposit $": 803250.0,
+      "Total Deposits $": 1338750.0,
+      "ROI (NMI)": 26.775
+     },
+     "KSA": {
+      "Spent $": 100000.0,
+      "Spent %": 0.2,
+      "Impressions": 10000000.0,
+      "Clicks": 100000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 6000.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 2100.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 525.0,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 525.0,
+      "Average Account Size $": 4150.0,
+      "FTD $": 871500.0,
+      "Re-Deposit $": 1307250.0,
+      "Total Deposits $": 2178750.0,
+      "ROI (NMI)": 21.7875
+     },
+     "Qatar": {
+      "Spent $": 5000.0,
+      "Spent %": 0.01,
+      "Impressions": 500000.0,
+      "Clicks": 5000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 300.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 105.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 26.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 26.25,
+      "Average Account Size $": 5650.0,
+      "FTD $": 59325.0,
+      "Re-Deposit $": 88987.5,
+      "Total Deposits $": 148312.5,
+      "ROI (NMI)": 29.6625
+     },
+     "Oman": {
+      "Spent $": 5000.0,
+      "Spent %": 0.01,
+      "Impressions": 500000.0,
+      "Clicks": 5000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 300.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 105.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 26.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 26.25,
+      "Average Account Size $": 4150.0,
+      "FTD $": 43575.0,
+      "Re-Deposit $": 65362.5,
+      "Total Deposits $": 108937.5,
+      "ROI (NMI)": 21.7875
+     },
+     "Lebanon": {
+      "Spent $": 5000.0,
+      "Spent %": 0.01,
+      "Impressions": 500000.0,
+      "Clicks": 5000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 300.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 105.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 26.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 26.25,
+      "Average Account Size $": 2250.0,
+      "FTD $": 23625.0,
+      "Re-Deposit $": 35437.5,
+      "Total Deposits $": 59062.5,
+      "ROI (NMI)": 11.8125
+     },
+     "Jordan": {
+      "Spent $": 5000.0,
+      "Spent %": 0.01,
+      "Impressions": 500000.0,
+      "Clicks": 5000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 300.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 105.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 26.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 26.25,
+      "Average Account Size $": 2250.0,
+      "FTD $": 23625.0,
+      "Re-Deposit $": 35437.5,
+      "Total Deposits $": 59062.5,
+      "ROI (NMI)": 11.8125
+     },
+     "Syria": {
+      "Spent $": 5000.0,
+      "Spent %": 0.01,
+      "Impressions": 500000.0,
+      "Clicks": 5000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 300.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 105.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 26.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 26.25,
+      "Average Account Size $": 1700.0,
+      "FTD $": 17850.0,
+      "Re-Deposit $": 26775.0,
+      "Total Deposits $": 44625.0,
+      "ROI (NMI)": 8.925
+     },
+     "Tunisia": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 2050.0,
+      "FTD $": 53812.5,
+      "Re-Deposit $": 80718.75,
+      "Total Deposits $": 134531.25,
+      "ROI (NMI)": 10.7625
+     },
+     "Morocco": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 2050.0,
+      "FTD $": 53812.5,
+      "Re-Deposit $": 80718.75,
+      "Total Deposits $": 134531.25,
+      "ROI (NMI)": 10.7625
+     },
+     "Switzerland": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 6750.0,
+      "FTD $": 177187.5,
+      "Re-Deposit $": 265781.25,
+      "Total Deposits $": 442968.75,
+      "ROI (NMI)": 35.4375
+     },
+     "Spain": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 4500.0,
+      "FTD $": 118125.0,
+      "Re-Deposit $": 177187.5,
+      "Total Deposits $": 295312.5,
+      "ROI (NMI)": 23.625
+     },
+     "Germany": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 4150.0,
+      "FTD $": 108937.5,
+      "Re-Deposit $": 163406.25,
+      "Total Deposits $": 272343.75,
+      "ROI (NMI)": 21.7875
+     },
+     "Greece": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 4900.0,
+      "FTD $": 128625.0,
+      "Re-Deposit $": 192937.5,
+      "Total Deposits $": 321562.5,
+      "ROI (NMI)": 25.725
+     },
+     "Norway": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 5650.0,
+      "FTD $": 148312.5,
+      "Re-Deposit $": 222468.75,
+      "Total Deposits $": 370781.25,
+      "ROI (NMI)": 29.6625
+     },
+     "Sweden": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 5250.0,
+      "FTD $": 137812.5,
+      "Re-Deposit $": 206718.75,
+      "Total Deposits $": 344531.25,
+      "ROI (NMI)": 27.5625
+     },
+     "Netherlands": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 4500.0,
+      "FTD $": 118125.0,
+      "Re-Deposit $": 177187.5,
+      "Total Deposits $": 295312.5,
+      "ROI (NMI)": 23.625
+     },
+     "Poland": {
+      "Spent $": 12500.0,
+      "Spent %": 0.025,
+      "Impressions": 1250000.0,
+      "Clicks": 12500.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 750.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 262.5,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 65.625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 65.625,
+      "Average Account Size $": 4900.0,
+      "FTD $": 128625.0,
+      "Re-Deposit $": 192937.5,
+      "Total Deposits $": 321562.5,
+      "ROI (NMI)": 25.725
+     },
+     "Turkey": {
+      "Spent $": 25000.0,
+      "Spent %": 0.05,
+      "Impressions": 2500000.0,
+      "Clicks": 25000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 1500.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 525.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 131.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 131.25,
+      "Average Account Size $": 3000.0,
+      "FTD $": 157500.0,
+      "Re-Deposit $": 236250.0,
+      "Total Deposits $": 393750.0,
+      "ROI (NMI)": 15.75
+     },
+     "Kazakhstan": {
+      "Spent $": 25000.0,
+      "Spent %": 0.05,
+      "Impressions": 2500000.0,
+      "Clicks": 25000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 1500.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 525.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 131.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 131.25,
+      "Average Account Size $": 3000.0,
+      "FTD $": 157500.0,
+      "Re-Deposit $": 236250.0,
+      "Total Deposits $": 393750.0,
+      "ROI (NMI)": 15.75
+     },
+     "Canada": {
+      "Spent $": 25000.0,
+      "Spent %": 0.05,
+      "Impressions": 2500000.0,
+      "Clicks": 25000.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 1500.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 525.0,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 131.25,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 131.25,
+      "Average Account Size $": 4900.0,
+      "FTD $": 257250.0,
+      "Re-Deposit $": 385875.0,
+      "Total Deposits $": 643125.0,
+      "ROI (NMI)": 25.725
+     },
+     "Australia": {
+      "Spent $": 0.0,
+      "Spent %": 0.0,
+      "Impressions": 0.0,
+      "Clicks": 0.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 0.0,
+      "CPL $": 0.0,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 0.0,
+      "CPA $": 0.0,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0,
+      "Funded Accounts (Aug cohort)": 0.0,
+      "CPFA $": 0.0,
+      "Accounts to Funded %": 0.0,
+      "FTD Accounts (all, non-cohorted)": 0.0,
+      "Average Account Size $": 5450.0,
+      "FTD $": 0.0,
+      "Re-Deposit $": 0.0,
+      "Total Deposits $": 0.0,
+      "ROI (NMI)": 0.0
+     },
+     "India": {
+      "Spent $": 93750.0,
+      "Spent %": 0.1875,
+      "Impressions": 9375000.0,
+      "Clicks": 93750.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 5625.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 1968.7499999999998,
+      "CPA $": 47.61904761904763,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 492.18749999999994,
+      "CPFA $": 190.4761904761905,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 492.18749999999994,
+      "Average Account Size $": 2250.0,
+      "FTD $": 442968.74999999994,
+      "Re-Deposit $": 664453.1249999998,
+      "Total Deposits $": 1107421.8749999998,
+      "ROI (NMI)": 11.812499999999998
+     },
+     "Pakistan": {
+      "Spent $": 31250.0,
+      "Spent %": 0.0625,
+      "Impressions": 3125000.0,
+      "Clicks": 31250.0,
+      "CTR %": 0.01,
+      "CPC $": 1.0,
+      "Leads": 1875.0,
+      "CPL $": 16.666666666666668,
+      "Leads to Accounts %": 0.35,
+      "Live Accounts": 656.25,
+      "CPA $": 47.61904761904762,
+      "Live Account to Funded Account": 0.25,
+      "Leads to Funded Accounts %": 0.0875,
+      "Funded Accounts (Aug cohort)": 164.0625,
+      "CPFA $": 190.47619047619048,
+      "Accounts to Funded %": 0.25,
+      "FTD Accounts (all, non-cohorted)": 164.0625,
+      "Average Account Size $": 1700.0,
+      "FTD $": 111562.5,
+      "Re-Deposit $": 167343.75,
+      "Total Deposits $": 278906.25,
+      "ROI (NMI)": 8.925
+     }
+    }
    },
    "actual": {
+    "UAE": {
+     "PPC": {
+      "Spend": 42331.56,
+      "Clicks": 4809.0,
+      "Impressions": 153609.0,
+      "Leads": 159.0,
+      "LiveAccounts": 68.0,
+      "FundedAccounts": 8.0,
+      "TotalDeposits": 1057900.0,
+      "FTD": 16066.0,
+      "FTDAccounts": 16.0
+     },
+     "Social": {
+      "Spend": 12306.02,
+      "Clicks": 6414.0,
+      "Impressions": 2608318.0,
+      "Leads": 49.0,
+      "LiveAccounts": 23.0,
+      "FundedAccounts": 2.0,
+      "TotalDeposits": 170339.0,
+      "FTD": 101.0,
+      "FTDAccounts": 2.0
+     }
+    },
+    "KSA": {
+     "PPC": {
+      "Spend": 25625.76,
+      "Clicks": 4917.0,
+      "Impressions": 68257.0,
+      "Leads": 184.0,
+      "LiveAccounts": 62.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 21250.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 11880.69,
+      "Clicks": 16268.0,
+      "Impressions": 5695022.0,
+      "Leads": 93.0,
+      "LiveAccounts": 28.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 575.0,
+      "FTD": 100.0,
+      "FTDAccounts": 1.0
+     }
+    },
+    "Qatar": {
+     "PPC": {
+      "Spend": 8330.35,
+      "Clicks": 1423.0,
+      "Impressions": 22897.0,
+      "Leads": 81.0,
+      "LiveAccounts": 23.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 50.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 2851.25,
+      "Clicks": 3239.0,
+      "Impressions": 1023828.0,
+      "Leads": 15.0,
+      "LiveAccounts": 6.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Oman": {
+     "PPC": {
+      "Spend": 4629.62,
+      "Clicks": 646.0,
+      "Impressions": 7616.0,
+      "Leads": 36.0,
+      "LiveAccounts": 9.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 2337.56,
+      "Clicks": 2923.0,
+      "Impressions": 791745.0,
+      "Leads": 24.0,
+      "LiveAccounts": 5.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 350.0,
+      "FTD": 50.0,
+      "FTDAccounts": 1.0
+     }
+    },
+    "Lebanon": {
+     "PPC": {
+      "Spend": 0.0,
+      "Clicks": 0.0,
+      "Impressions": 0.0,
+      "Leads": 1.0,
+      "LiveAccounts": 0.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 2896.1,
+      "Clicks": 4199.0,
+      "Impressions": 997116.0,
+      "Leads": 57.0,
+      "LiveAccounts": 23.0,
+      "FundedAccounts": 2.0,
+      "TotalDeposits": 954.0,
+      "FTD": 273.0,
+      "FTDAccounts": 2.0
+     }
+    },
+    "Jordan": {
+     "PPC": {
+      "Spend": 0.0,
+      "Clicks": 0.0,
+      "Impressions": 0.0,
+      "Leads": 1.0,
+      "LiveAccounts": 0.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 3453.04,
+      "Clicks": 6236.0,
+      "Impressions": 1290061.0,
+      "Leads": 64.0,
+      "LiveAccounts": 26.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 1357.0,
+      "FTD": 50.0,
+      "FTDAccounts": 1.0
+     }
+    },
+    "Syria": {
+     "PPC": {
+      "Spend": 0.0,
+      "Clicks": 0.0,
+      "Impressions": 0.0,
+      "Leads": 4.0,
+      "LiveAccounts": 2.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 100.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 1188.51,
+      "Clicks": 8653.0,
+      "Impressions": 1161048.0,
+      "Leads": 392.0,
+      "LiveAccounts": 154.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 50.0,
+      "FTD": 50.0,
+      "FTDAccounts": 1.0
+     }
+    },
+    "Tunisia": {
+     "PPC": {
+      "Spend": 9238.95,
+      "Clicks": 745.0,
+      "Impressions": 6668.0,
+      "Leads": 37.0,
+      "LiveAccounts": 11.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 4328.61,
+      "Clicks": 19169.0,
+      "Impressions": 3497818.0,
+      "Leads": 165.0,
+      "LiveAccounts": 51.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 282.0,
+      "FTD": 282.0,
+      "FTDAccounts": 2.0
+     }
+    },
+    "Morocco": {
+     "PPC": {
+      "Spend": 9579.69,
+      "Clicks": 1604.0,
+      "Impressions": 13703.0,
+      "Leads": 162.0,
+      "LiveAccounts": 49.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 350.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 4262.24,
+      "Clicks": 17584.0,
+      "Impressions": 2739865.0,
+      "Leads": 366.0,
+      "LiveAccounts": 114.0,
+      "FundedAccounts": 4.0,
+      "TotalDeposits": 10787.0,
+      "FTD": 1586.0,
+      "FTDAccounts": 9.0
+     }
+    },
+    "Switzerland": {
+     "PPC": {
+      "Spend": 7490.6,
+      "Clicks": 708.0,
+      "Impressions": 15962.0,
+      "Leads": 19.0,
+      "LiveAccounts": 3.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 3366.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 1918.37,
+      "Clicks": 281.0,
+      "Impressions": 65022.0,
+      "Leads": 8.0,
+      "LiveAccounts": 2.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Spain": {
+     "PPC": {
+      "Spend": 10364.7,
+      "Clicks": 1634.0,
+      "Impressions": 52080.0,
+      "Leads": 139.0,
+      "LiveAccounts": 42.0,
+      "FundedAccounts": 3.0,
+      "TotalDeposits": 30927.0,
+      "FTD": 491.0,
+      "FTDAccounts": 3.0
+     },
+     "Social": {
+      "Spend": 5481.28,
+      "Clicks": 1896.0,
+      "Impressions": 357698.0,
+      "Leads": 60.0,
+      "LiveAccounts": 23.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 115.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Germany": {
+     "PPC": {
+      "Spend": 17084.83,
+      "Clicks": 2103.0,
+      "Impressions": 81335.0,
+      "Leads": 92.0,
+      "LiveAccounts": 27.0,
+      "FundedAccounts": 4.0,
+      "TotalDeposits": 13815.0,
+      "FTD": 1133.0,
+      "FTDAccounts": 5.0
+     },
+     "Social": {
+      "Spend": 4317.27,
+      "Clicks": 821.0,
+      "Impressions": 127403.0,
+      "Leads": 41.0,
+      "LiveAccounts": 18.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Greece": {
+     "PPC": {
+      "Spend": 4632.48,
+      "Clicks": 863.0,
+      "Impressions": 20837.0,
+      "Leads": 32.0,
+      "LiveAccounts": 15.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 50.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 5475.12,
+      "Clicks": 2935.0,
+      "Impressions": 789465.0,
+      "Leads": 54.0,
+      "LiveAccounts": 17.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Norway": {
+     "PPC": {
+      "Spend": 4627.32,
+      "Clicks": 227.0,
+      "Impressions": 5200.0,
+      "Leads": 11.0,
+      "LiveAccounts": 3.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 2547.76,
+      "Clicks": 427.0,
+      "Impressions": 68965.0,
+      "Leads": 16.0,
+      "LiveAccounts": 3.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Sweden": {
+     "PPC": {
+      "Spend": 4558.24,
+      "Clicks": 515.0,
+      "Impressions": 11110.0,
+      "Leads": 22.0,
+      "LiveAccounts": 5.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 2022.34,
+      "Clicks": 408.0,
+      "Impressions": 68644.0,
+      "Leads": 8.0,
+      "LiveAccounts": 3.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Netherlands": {
+     "PPC": {
+      "Spend": 4672.74,
+      "Clicks": 509.0,
+      "Impressions": 10603.0,
+      "Leads": 17.0,
+      "LiveAccounts": 9.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 350.0,
+      "FTD": 350.0,
+      "FTDAccounts": 1.0
+     },
+     "Social": {
+      "Spend": 2586.68,
+      "Clicks": 452.0,
+      "Impressions": 67331.0,
+      "Leads": 18.0,
+      "LiveAccounts": 5.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Poland": {
+     "PPC": {
+      "Spend": 4769.95,
+      "Clicks": 785.0,
+      "Impressions": 22798.0,
+      "Leads": 16.0,
+      "LiveAccounts": 3.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 2370.83,
+      "Clicks": 537.0,
+      "Impressions": 104980.0,
+      "Leads": 21.0,
+      "LiveAccounts": 7.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Turkey": {
+     "PPC": {
+      "Spend": 3386.23,
+      "Clicks": 1959.0,
+      "Impressions": 54594.0,
+      "Leads": 6.0,
+      "LiveAccounts": 1.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 11687.0,
+      "FTD": 4022.0,
+      "FTDAccounts": 1.0
+     },
+     "Social": {
+      "Spend": 5100.95,
+      "Clicks": 3101.0,
+      "Impressions": 661555.0,
+      "Leads": 81.0,
+      "LiveAccounts": 26.0,
+      "FundedAccounts": 2.0,
+      "TotalDeposits": 6470.0,
+      "FTD": 2003.0,
+      "FTDAccounts": 2.0
+     }
+    },
+    "Kazakhstan": {
+     "PPC": {
+      "Spend": 2781.6,
+      "Clicks": 236.0,
+      "Impressions": 3036.0,
+      "Leads": 25.0,
+      "LiveAccounts": 6.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 3938.79,
+      "Clicks": 1317.0,
+      "Impressions": 285461.0,
+      "Leads": 44.0,
+      "LiveAccounts": 13.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Canada": {
+     "PPC": {
+      "Spend": 16939.6,
+      "Clicks": 851.0,
+      "Impressions": 24820.0,
+      "Leads": 53.0,
+      "LiveAccounts": 25.0,
+      "FundedAccounts": 5.0,
+      "TotalDeposits": 38562.0,
+      "FTD": 460.0,
+      "FTDAccounts": 6.0
+     },
+     "Social": {
+      "Spend": 5830.24,
+      "Clicks": 1472.0,
+      "Impressions": 225104.0,
+      "Leads": 53.0,
+      "LiveAccounts": 20.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 3256.0,
+      "FTD": 72.0,
+      "FTDAccounts": 1.0
+     }
+    },
+    "Australia": {
+     "PPC": {
+      "Spend": 13902.07,
+      "Clicks": 933.0,
+      "Impressions": 41271.0,
+      "Leads": 49.0,
+      "LiveAccounts": 21.0,
+      "FundedAccounts": 7.0,
+      "TotalDeposits": 54962.0,
+      "FTD": 896.0,
+      "FTDAccounts": 9.0
+     },
+     "Social": {
+      "Spend": 2406.86,
+      "Clicks": 511.0,
+      "Impressions": 81333.0,
+      "Leads": 34.0,
+      "LiveAccounts": 12.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 1203.0,
+      "FTD": 35.0,
+      "FTDAccounts": 1.0
+     }
+    },
+    "India": {
+     "PPC": {
+      "Spend": 4693.3,
+      "Clicks": 1073.0,
+      "Impressions": 13139.0,
+      "Leads": 84.0,
+      "LiveAccounts": 21.0,
+      "FundedAccounts": 1.0,
+      "TotalDeposits": 8869.0,
+      "FTD": 100.0,
+      "FTDAccounts": 1.0
+     },
+     "Social": {
+      "Spend": 0.0,
+      "Clicks": 0.0,
+      "Impressions": 0.0,
+      "Leads": 4.0,
+      "LiveAccounts": 2.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 2907.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    },
+    "Pakistan": {
+     "PPC": {
+      "Spend": 4656.84,
+      "Clicks": 3247.0,
+      "Impressions": 18639.0,
+      "Leads": 401.0,
+      "LiveAccounts": 120.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     },
+     "Social": {
+      "Spend": 5662.45,
+      "Clicks": 17211.0,
+      "Impressions": 3323437.0,
+      "Leads": 324.0,
+      "LiveAccounts": 111.0,
+      "FundedAccounts": 0.0,
+      "TotalDeposits": 0.0,
+      "FTD": 0.0,
+      "FTDAccounts": 0.0
+     }
+    }
+   },
+   "totals": {
+    "inputs": {
+     "ISO": null,
+     "PPC": {
+      "Budget": 1000000.0,
+      "PlanCPL": null
+     },
+     "Social": {
+      "Budget": 500000.0,
+      "PlanCPL": null
+     },
+     "AvgAccountSize": null
+    },
+    "actual": {
+     "PPC": {
+      "Spend": 204296.43000000002,
+      "Clicks": 29787.0,
+      "Impressions": 648174.0,
+      "Leads": 1631.0,
+      "LiveAccounts": 525.0,
+      "FundedAccounts": 29.0,
+      "TotalDeposits": 1242238.0,
+      "FTD": 23518.0,
+      "FTDAccounts": 42.0
+     },
+     "Social": {
+      "Spend": 95162.95999999999,
+      "Clicks": 116054.0,
+      "Impressions": 26031219.0,
+      "Leads": 1991.0,
+      "LiveAccounts": 692.0,
+      "FundedAccounts": 17.0,
+      "TotalDeposits": 198645.0,
+      "FTD": 4602.0,
+      "FTDAccounts": 23.0
+     }
+    }
+   }
+  },
+  "sep": {
+   "label": "September 2026 plan",
+   "planBasis": "PPC / Google Search $700,000  \u00b7  Paid Social $500,000  \u00b7  budget split exactly as per the plan of 9 September 2026",
+   "planDated": "2026-09-09",
+   "workbookDated": "2026-09-10",
+   "source": [
+    "Lead_Distribution_Marketing_Budget_10-09-2026.xlsx"
+   ],
+   "reports": "budget, CPL and leads only; this plan states no accounts, funded accounts, deposits or ROI",
+   "excluded": "the workbook's sales-team views and staff / leads-per-head columns",
+   "byRegion": [
+    {
+     "region": "GCC & MENA",
+     "countries": "UAE \u00b7 Saudi Arabia \u00b7 Qatar \u00b7 Oman \u00b7 Jordan \u00b7 Lebanon \u00b7 Syria",
+     "PPC": {
+      "Budget": 399999.9999800001,
+      "CPL": 119.51710261628334,
+      "Leads": 3346.801346617509
+     },
+     "Social": {
+      "Budget": 150000.0,
+      "CPL": 43.2759064026742,
+      "Leads": 3466.1319073083782
+     },
+     "Combined": {
+      "Budget": 549999.9999800001,
+      "Leads": 6812.933253925887
+     },
+     "shareOfPPCBudget": 0.571428571457143,
+     "shareOfSocialBudget": 0.29999999997
+    },
+    {
+     "region": "North Africa",
+     "countries": "Tunisia \u00b7 Morocco",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": null,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "CPL": 30.0,
+      "Leads": 1666.6666666666667
+     },
+     "Combined": {
+      "Budget": 50000.0,
+      "Leads": 1666.6666666666667
+     },
+     "shareOfPPCBudget": 0.0,
+     "shareOfSocialBudget": 0.09999999998999999
+    },
+    {
+     "region": "Europe",
+     "countries": "Switzerland \u00b7 Spain \u00b7 Germany \u00b7 Poland",
+     "PPC": {
+      "Budget": 179999.99997,
+      "CPL": 130.54945054945054,
+      "Leads": 1378.787878558081
+     },
+     "Social": {
+      "Budget": 125000.0,
+      "CPL": 76.84729064039408,
+      "Leads": 1626.6025641025642
+     },
+     "Combined": {
+      "Budget": 304999.99997,
+      "Leads": 3005.390442660645
+     },
+     "shareOfPPCBudget": 0.2571428571257143,
+     "shareOfSocialBudget": 0.249999999975
+    },
+    {
+     "region": "Turkey",
+     "countries": "Turkey",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": null,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "CPL": 40.0,
+      "Leads": 1250.0
+     },
+     "Combined": {
+      "Budget": 50000.0,
+      "Leads": 1250.0
+     },
+     "shareOfPPCBudget": 0.0,
+     "shareOfSocialBudget": 0.09999999998999999
+    },
+    {
+     "region": "Canada & Australia",
+     "countries": "Canada \u00b7 Australia",
+     "PPC": {
+      "Budget": 119999.99998000001,
+      "CPL": 137.0909090909091,
+      "Leads": 875.3315648408488
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "CPL": 77.41935483870968,
+      "Leads": 645.8333333333333
+     },
+     "Combined": {
+      "Budget": 169999.99998000002,
+      "Leads": 1521.164898174182
+     },
+     "shareOfPPCBudget": 0.17142857141714285,
+     "shareOfSocialBudget": 0.09999999998999999
+    },
+    {
+     "region": "LATAM",
+     "countries": "Mexico \u00b7 Chile \u00b7 Peru \u00b7 Uruguay \u00b7 Argentina",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": null,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 75000.00005,
+      "CPL": 25.471698113848348,
+      "Leads": 2944.444446333333
+     },
+     "Combined": {
+      "Budget": 75000.00005,
+      "Leads": 2944.444446333333
+     },
+     "shareOfPPCBudget": 0.0,
+     "shareOfSocialBudget": 0.150000000085
+    }
+   ],
+   "byCountry": {
+    "UAE": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 100000.00003000001,
+      "CPL": 135.0,
+      "Leads": 740.7407409629631
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "CPL": 75.0,
+      "Leads": 666.6666666666666
+     },
+     "Combined": {
+      "Budget": 150000.00003,
+      "Leads": 1407.4074076296297
+     }
+    },
+    "KSA": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 199999.99999,
+      "CPL": 110.0,
+      "Leads": 1818.1818180909092
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "CPL": 60.0,
+      "Leads": 833.3333333333334
+     },
+     "Combined": {
+      "Budget": 249999.99999,
+      "Leads": 2651.5151514242425
+     },
+     "sourceLabel": "Saudi Arabia"
+    },
+    "Qatar": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 49999.99998,
+      "CPL": 150.0,
+      "Leads": 333.3333332
+     },
+     "Social": {
+      "Budget": 10000.0,
+      "CPL": 85.0,
+      "Leads": 117.6470588235294
+     },
+     "Combined": {
+      "Budget": 59999.99998,
+      "Leads": 450.9803920235294
+     }
+    },
+    "Oman": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 49999.99998,
+      "CPL": 110.0,
+      "Leads": 454.5454543636364
+     },
+     "Social": {
+      "Budget": 10000.0,
+      "CPL": 55.0,
+      "Leads": 181.8181818181818
+     },
+     "Combined": {
+      "Budget": 59999.99998,
+      "Leads": 636.3636361818183
+     }
+    },
+    "Jordan": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 60.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 10000.0,
+      "CPL": 30.0,
+      "Leads": 333.3333333333333
+     },
+     "Combined": {
+      "Budget": 10000.0,
+      "Leads": 333.3333333333333
+     }
+    },
+    "Lebanon": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 60.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 10000.0,
+      "CPL": 30.0,
+      "Leads": 333.3333333333333
+     },
+     "Combined": {
+      "Budget": 10000.0,
+      "Leads": 333.3333333333333
+     }
+    },
+    "Syria": {
+     "region": "GCC & MENA",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 45.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 10000.0,
+      "CPL": 10.0,
+      "Leads": 1000.0
+     },
+     "Combined": {
+      "Budget": 10000.0,
+      "Leads": 1000.0
+     }
+    },
+    "Tunisia": {
+     "region": "North Africa",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 55.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "CPL": 30.0,
+      "Leads": 833.3333333333334
+     },
+     "Combined": {
+      "Budget": 25000.0,
+      "Leads": 833.3333333333334
+     }
+    },
+    "Morocco": {
+     "region": "North Africa",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 55.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "CPL": 30.0,
+      "Leads": 833.3333333333334
+     },
+     "Combined": {
+      "Budget": 25000.0,
+      "Leads": 833.3333333333334
+     }
+    },
+    "Switzerland": {
+     "region": "Europe",
+     "PPC": {
+      "Budget": 59999.999990000004,
+      "CPL": 180.0,
+      "Leads": 333.3333332777778
+     },
+     "Social": {
+      "Budget": 31250.0,
+      "CPL": 100.0,
+      "Leads": 312.5
+     },
+     "Combined": {
+      "Budget": 91249.99999000001,
+      "Leads": 645.8333332777778
+     }
+    },
+    "Spain": {
+     "region": "Europe",
+     "PPC": {
+      "Budget": 59999.999990000004,
+      "CPL": 120.0,
+      "Leads": 499.9999999166667
+     },
+     "Social": {
+      "Budget": 31250.0,
+      "CPL": 75.0,
+      "Leads": 416.6666666666667
+     },
+     "Combined": {
+      "Budget": 91249.99999000001,
+      "Leads": 916.6666665833334
+     }
+    },
+    "Germany": {
+     "region": "Europe",
+     "PPC": {
+      "Budget": 59999.999990000004,
+      "CPL": 110.0,
+      "Leads": 545.4545453636364
+     },
+     "Social": {
+      "Budget": 31250.0,
+      "CPL": 75.0,
+      "Leads": 416.6666666666667
+     },
+     "Combined": {
+      "Budget": 91249.99999000001,
+      "Leads": 962.121212030303
+     }
+    },
+    "Poland": {
+     "region": "Europe",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 130.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 31250.0,
+      "CPL": 65.0,
+      "Leads": 480.7692307692308
+     },
+     "Combined": {
+      "Budget": 31250.0,
+      "Leads": 480.7692307692308
+     }
+    },
+    "Turkey": {
+     "region": "Turkey",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 80.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 50000.0,
+      "CPL": 40.0,
+      "Leads": 1250.0
+     },
+     "Combined": {
+      "Budget": 50000.0,
+      "Leads": 1250.0
+     }
+    },
+    "Canada": {
+     "region": "Canada & Australia",
+     "PPC": {
+      "Budget": 59999.999990000004,
+      "CPL": 130.0,
+      "Leads": 461.5384614615385
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "CPL": 75.0,
+      "Leads": 333.3333333333333
+     },
+     "Combined": {
+      "Budget": 84999.99999000001,
+      "Leads": 794.8717947948718
+     }
+    },
+    "Australia": {
+     "region": "Canada & Australia",
+     "PPC": {
+      "Budget": 59999.999990000004,
+      "CPL": 145.0,
+      "Leads": 413.79310337931037
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "CPL": 80.0,
+      "Leads": 312.5
+     },
+     "Combined": {
+      "Budget": 84999.99999000001,
+      "Leads": 726.2931033793104
+     }
+    },
+    "Mexico": {
+     "region": "LATAM",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 55.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "CPL": 25.0,
+      "Leads": 1000.0
+     },
+     "Combined": {
+      "Budget": 25000.0,
+      "Leads": 1000.0
+     }
+    },
+    "Chile": {
+     "region": "LATAM",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 60.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 8333.333349999999,
+      "CPL": 25.0,
+      "Leads": 333.333334
+     },
+     "Combined": {
+      "Budget": 8333.333349999999,
+      "Leads": 333.333334
+     }
+    },
+    "Peru": {
+     "region": "LATAM",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 60.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 8333.333349999999,
+      "CPL": 25.0,
+      "Leads": 333.333334
+     },
+     "Combined": {
+      "Budget": 8333.333349999999,
+      "Leads": 333.333334
+     }
+    },
+    "Uruguay": {
+     "region": "LATAM",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 65.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 8333.333349999999,
+      "CPL": 30.0,
+      "Leads": 277.7777783333333
+     },
+     "Combined": {
+      "Budget": 8333.333349999999,
+      "Leads": 277.7777783333333
+     }
+    },
+    "Argentina": {
+     "region": "LATAM",
+     "PPC": {
+      "Budget": 0.0,
+      "CPL": 60.0,
+      "Leads": 0.0
+     },
+     "Social": {
+      "Budget": 25000.0,
+      "CPL": 25.0,
+      "Leads": 1000.0
+     },
+     "Combined": {
+      "Budget": 25000.0,
+      "Leads": 1000.0
+     }
+    }
+   },
+   "totals": {
     "PPC": {
-     "Spend": 204296.43000000002,
-     "Clicks": 29787.0,
-     "Impressions": 648174.0,
-     "Leads": 1631.0,
-     "LiveAccounts": 525.0,
-     "FundedAccounts": 29.0,
-     "TotalDeposits": 1242238.0,
-     "FTD": 23518.0,
-     "FTDAccounts": 42.0
+     "Budget": 699999.99993,
+     "CPL": 124.97945001788634,
+     "Leads": 5600.920790016439
     },
     "Social": {
-     "Spend": 95162.95999999999,
-     "Clicks": 116054.0,
-     "Impressions": 26031219.0,
-     "Leads": 1991.0,
-     "LiveAccounts": 692.0,
-     "FundedAccounts": 17.0,
-     "TotalDeposits": 198645.0,
-     "FTD": 4602.0,
-     "FTDAccounts": 23.0
+     "Budget": 500000.00005000003,
+     "CPL": 43.10464139530099,
+     "Leads": 11599.678917744275
+    },
+    "Combined": {
+     "Budget": 1199999.99998,
+     "Leads": 17200.59970776071
     }
    }
   }
