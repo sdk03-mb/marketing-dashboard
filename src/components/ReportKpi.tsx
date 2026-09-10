@@ -10,7 +10,7 @@ import { Marks as ChannelIcon } from "./ChannelPicker";
 
 // Report palette: Office-style blues; KPI tiles in four shades, darkest first.
 export const BLUE = "#2e75b6", BLUE2 = "#1f9dbf";
-export const BLUES = ["#1f4e79", "#2e75b6", "#3d8fd6", "#5ba7e5"];
+export const BLUES = ["#1f4e79", "#27649c", "#2e75b6", "#3d8fd6", "#4c9bdd", "#5ba7e5"];
 const FONT = { fontFamily: "Inter, sans-serif" };
 const short = (v: number) => (v >= 1_000_000 ? "$" + (v / 1_000_000).toFixed(1) + "m" : v >= 1000 ? "$" + Math.round(v / 1000) + "k" : "$" + Math.round(v));
 
@@ -25,7 +25,7 @@ export function hbar(names: string[], values: number[], color: string, isMoney: 
 }
 
 type Props = { agg: Agg; period: Period; chan: string; enabled: Set<string>; chartHeight?: number; svg?: boolean };
-type Rank = { key: string; name: string; roi: number; funded: number };
+type Rank = { key: string; name: string; roi: number; funded: number; spend: number };
 
 /** Everything the KPI pieces need: totals, top markets, tile values and best / worst rows. */
 function useKpi(agg: Agg, period: Period, chan: string, enabled: Set<string>) {
@@ -38,18 +38,21 @@ function useKpi(agg: Agg, period: Period, chan: string, enabled: Set<string>) {
   const avenues = useMemo(() => CHANNEL_NAMES.flatMap((ch) => {
     const g = buildGrid(agg, period, ch, allOn);
     const t = g.groups.find((x) => x.tot) ?? g.groups[0];
-    return t && t.act.Spend > 0 ? [{ key: ch, name: ch.replace(" (combined)", ""), roi: t.act.ROI, funded: t.act.FundedAccounts }] : [];
+    return t && t.act.Spend > 0 ? [{ key: ch, name: ch.replace(" (combined)", ""), roi: t.act.ROI, funded: t.act.FundedAccounts, spend: t.act.Spend }] : [];
   }), [agg, period, allOn]);
   if (!tot) return null;
+  const a = tot.act;
   const tiles = [
-    { l: "Total spend", v: money(tot.act.Spend), c: BLUES[0] },
-    { l: "Leads", v: fmt(tot.act.Leads, "n"), c: BLUES[1] },
-    { l: "Funded accounts", v: fmt(tot.act.FundedAccounts, "n"), c: BLUES[2] },
-    { l: "Cost per funded account", v: tot.act.FundedAccounts ? fmt(tot.act.CPFA, "$2") : "-", c: BLUES[3] },
+    { l: "Spend", v: money(a.Spend), c: BLUES[0] },
+    { l: "CPC", v: a.Clicks ? fmt(a.CPC, "$2") : "-", c: BLUES[1] },
+    { l: "CPL", v: a.Leads ? fmt(a.CPL, "$2") : "-", c: BLUES[2] },
+    { l: "CPA", v: a.LiveAccounts ? fmt(a.CPA, "$2") : "-", c: BLUES[3] },
+    { l: "CPFA", v: a.FundedAccounts ? fmt(a.CPFA, "$2") : "-", c: BLUES[4] },
+    { l: "Avg account size", v: a.FTDAccounts ? fmt(a.AvgAccountSize, "$2") : "-", c: BLUES[5] },
   ];
   // Best / worst by return per $1 among markets and avenues with spend; funded accounts break ties.
   const rank = (xs: Rank[]) => [...xs].sort((a, b) => b.roi - a.roi || b.funded - a.funded);
-  const cRank = rank(byC.filter((g) => g.act.Spend > 0).map((g) => ({ key: g.name, name: g.name, roi: g.act.ROI, funded: g.act.FundedAccounts })));
+  const cRank = rank(byC.filter((g) => g.act.Spend > 0).map((g) => ({ key: g.name, name: g.name, roi: g.act.ROI, funded: g.act.FundedAccounts, spend: g.act.Spend })));
   const aRank = rank(avenues.filter((a) => a.key !== ALLCH));
   const bw = (xs: Rank[]) => ({ best: xs[0], worst: xs.length > 1 ? xs[xs.length - 1] : undefined });
   const bwC = bw(cRank), bwA = bw(aRank);
@@ -60,23 +63,14 @@ function useKpi(agg: Agg, period: Period, chan: string, enabled: Set<string>) {
   return { tot, top, tiles, bwRows };
 }
 
-/** KPI tile column with the grey summary box. */
+/** KPI tile column: spend and the unit costs. */
 export function KpiTiles({ agg, period, chan, enabled }: Props) {
   const k0 = useKpi(agg, period, chan, enabled);
   // No market in scope (a continent we do not advertise in): tiles show zero rather than vanish.
-  const zero = { act: { Spend: 0, TotalDeposits: 0, ROI: 0 }, pl: { Spend: 0 } };
-  const k = k0 ?? { tot: zero, tiles: [
-    { l: "Total spend", v: money(0), c: BLUES[0] }, { l: "Leads", v: "0", c: BLUES[1] },
-    { l: "Funded accounts", v: "0", c: BLUES[2] }, { l: "Cost per funded account", v: "-", c: BLUES[3] },
-  ] };
+  const k = k0 ?? { tiles: ["Spend", "CPC", "CPL", "CPA", "CPFA", "Avg account size"].map((l, i) => ({ l, v: i === 0 ? money(0) : "-", c: BLUES[i] })) };
   return (
     <div className="rtiles">
       {k.tiles.map((t) => <div key={t.l} className="rtile" style={{ background: t.c }}><div className="rtl">{t.l}</div><div className="rtv">{t.v}</div></div>)}
-      <div className="rsbox">
-        <div className="rsl"><span>Plan budget</span><b>{money(k.tot.pl.Spend)}</b></div>
-        <div className="rsl"><span>Total spent</span><b>{money(k.tot.act.Spend)}</b></div>
-        <div className="rsbig"><span>Total deposits</span><b>{money(k.tot.act.TotalDeposits)}</b></div>
-      </div>
     </div>
   );
 }
@@ -113,7 +107,7 @@ export function KpiBestWorst({ agg, period, chan, enabled }: Props) {
           {row.x ? (
             <>
               <div className="rbwn">{row.flag && <Flag country={row.x.name} />}<span>{row.x.name}</span></div>
-              <div className="rbwv"><small>{fmt(row.x.funded, "n")} funded</small></div>
+              <div className="rbwv"><small>{money(row.x.spend)} spent</small></div>
             </>
           ) : <div className="rbwv"><span>-</span></div>}
         </div>
