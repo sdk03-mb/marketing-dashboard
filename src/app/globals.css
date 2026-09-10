@@ -440,7 +440,7 @@ table.mt { width: 100%; border-collapse: collapse; font-size: 12.5px; background
 .rp2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
 .rtiles { display: flex; flex-direction: column; gap: 8px; }
 .rtile { color: #fff; padding: 8px 12px 10px; min-height: 80px; display: flex; flex-direction: column; justify-content: space-between; }
-.rtile .rtl { font-size: 9.5px; text-transform: uppercase; letter-spacing: .05em; opacity: .95; }
+.rtile .rtl { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; opacity: .95; }
 .rtile .rtv { font-size: 34px; font-weight: 300; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .rchart h3, .rsummary h3 { font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: #6e6e6e; margin-bottom: 4px; }
 .rrow2 { border-top: 1px solid #e6e6e6; padding-top: 22px; margin-top: 10px; }
@@ -518,7 +518,8 @@ table.rct { width: 100%; border-collapse: collapse; font-size: 11.5px; font-vari
 
 /* report page 1: best / worst tiles under the summary box */
 .rbw { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; }
-.rbw .rtile { min-height: 130px; position: relative; justify-content: flex-start; gap: 6px; }
+.rbw .rtile { min-height: 130px; position: relative; justify-content: flex-start; gap: 4px; }
+.rbws { font-size: 12px; color: rgba(255,255,255,.85); line-height: 1.3; margin-top: -2px; }
 .rbwn { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; color: #fff; margin-top: 4px; }
 .rbwn .flag { width: 30px; height: 20px; border-radius: 3px; box-shadow: 0 0 0 1px rgba(255,255,255,.5); }
 .rbwn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -895,3 +896,76 @@ table.ht { width: 100%; border-collapse: collapse; font-size: 13px; }
 .quad.compact .quad-chips { left: 90px; gap: 2px 3px; }
 .quad.compact .quad-chips em { font-size: 9px; padding: 1px 6px 1px 4px; gap: 3px; }
 .quad.compact .quad-chips em .flag { width: 12px; height: 8px; }
+
+/* ---------- AI recommendation per country: region map, the written call, one box per avenue ---------- */
+.rdiv-note { max-width: 900px; font-size: 14px; line-height: 1.5; color: #5b6472; margin: 0 0 18px; }
+.aic-toc { column-count: 3; column-gap: 40px; font-size: 15px; gap: 6px; display: block; }
+.aic-toc li { break-inside: avoid; margin-bottom: 6px; }
+.aic { display: flex; flex-direction: column; gap: 14px; flex: 1; min-height: 0; }
+.aic-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; flex: 1; min-height: 0; }
+.aic-side { display: flex; flex-direction: column; gap: 30px; min-height: 0; }
+.aic-side .aic-text { margin-bottom: auto; }
+.aic-head { display: flex; align-items: center; gap: 12px; }
+.aic-head .flag { width: 44px; height: 30px; border-radius: 3px; box-shadow: 0 0 0 1px #e6e9ee; }
+.aic-head h2 { margin: 0; font-size: 30px; font-weight: 800; color: #1a1d23; }
+.aic-tag { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.aic-tag.big { font-size: 14px; padding: 6px 14px; margin-left: auto; }
+.aic-tag.good { color: #14532d; background: #cfeedd; } .aic-tag.warn { color: #7a4f00; background: #fdf0c2; } .aic-tag.bad { color: #9f1d28; background: #fbd5d8; } .aic-tag.mute { color: #374151; background: #e5e7eb; }
+.aic-map { min-height: 0; border: 1px solid #e6e9ee; border-radius: 6px; overflow: hidden; display: flex; align-items: center; }
+.aic-map .rmap { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.aic-map .rmap svg { flex: 1; min-height: 0; width: 100%; height: auto; max-height: 100%; }
+.aic-map .rmaplegend { display: none; }
+.aic-text { display: flex; flex-direction: column; gap: 16px; font-size: 21px; line-height: 1.45; color: #1a1d23; }
+.aic-text p { margin: 0; } .aic-text b { display: block; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #2e75b6; margin-bottom: 2px; }
+.aic-box { border: 1px solid #dfe3ea; border-left: 6px solid #9aa1ad; border-radius: 6px; padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; background: #fff; }
+.aic-box.good { border-left-color: #16a34a; } .aic-box.warn { border-left-color: #d97706; } .aic-box.bad { border-left-color: #dc2626; }
+.aic-box.off { border-style: dashed; background: #f7f8fa; color: #9aa1ad; }
+.aic-box.off .pmarks { opacity: .45; filter: grayscale(1); } .aic-box.off b { color: #9aa1ad; }
+.aic-bh { display: flex; align-items: center; gap: 10px; font-size: 17px; }
+.aic-bh .pmarks { display: inline-flex; align-items: center; gap: 6px; transform: scale(1.3); transform-origin: left center; margin-right: 8px; }
+.aic-bh b { color: #1a1d23; } .aic-bh .aic-tag { margin-left: auto; }
+.aic-none { margin: 0; font-size: 16px; }
+.aic-figs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.aic-figs div { display: flex; flex-direction: column; gap: 1px; }
+.aic-figs small { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #5b6472; }
+.aic-figs b { font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: #1a1d23; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.aic-figs i { font-style: normal; font-size: 10.5px; color: #9aa1ad; white-space: nowrap; }
+.aic-line { margin: 0; font-size: 15.5px; line-height: 1.5; color: #1a1d23; }
+
+/* ---------- AI recommendation overview board: one column per call, one card per shared "how" ---------- */
+.aib { display: grid; gap: 22px; flex: 1; min-height: 0; align-items: stretch; }
+.aib-col { display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; min-height: 0; }
+.aib-head { color: #fff; padding: 12px 16px; display: flex; align-items: baseline; gap: 10px; }
+.aib-head b { font-size: 18px; font-weight: 800; letter-spacing: .08em; }
+.aib-head small { font-size: 12px; opacity: .9; }
+.aib-col.good .aib-head { background: #16a34a; } .aib-col.warn .aib-head { background: #d97706; } .aib-col.bad .aib-head { background: #dc2626; } .aib-col.mute .aib-head { background: #6b7280; }
+.aib-col.good .aib-cards { background: #cfeedd; } .aib-col.warn .aib-cards { background: #fdf0c2; } .aib-col.bad .aib-cards { background: #fbd5d8; } .aib-col.mute .aib-cards { background: #e5e7eb; }
+.aib-cards { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.aib-card { background: #fff; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); display: flex; flex-direction: column; gap: 10px; }
+.aib-flags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.aib-flags li { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700; color: #1a1d23; background: #f3f5f8; border-radius: 999px; padding: 3px 10px 3px 5px; }
+.aib-flags .flag { width: 20px; height: 14px; border-radius: 2px; }
+.aib-need { font-size: 13px; color: #5b6472; }
+.aib-need b { color: #1a1d23; letter-spacing: .04em; }
+.aib-how { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.45; color: #1a1d23; }
+.aib-flags li span { font-weight: 500; color: #5b6472; }
+.aib-empty { margin: 0; font-size: 13px; color: #5b6472; font-style: italic; }
+.aib-foot { grid-column: 1 / -1; font-size: 12.5px; color: #5b6472; border-top: 1px solid #e6e9ee; padding-top: 8px; }
+.aib.withfoot { grid-template-rows: minmax(0, 1fr) auto; }
+.aib.dense .aib-cards { padding: 10px; gap: 10px; }
+.aib.dense .aib-card { padding: 10px 12px; gap: 6px; }
+.aib.dense .aib-flags { gap: 4px 5px; }
+.aib.dense .aib-flags li { font-size: 12px; padding: 2px 8px 2px 4px; gap: 5px; }
+.aib.dense .aib-flags .flag { width: 17px; height: 12px; }
+.aib.dense .aib-need { font-size: 12px; }
+.aib.dense .aib-how { font-size: 13px; line-height: 1.35; padding-left: 16px; }
+.aib.dense .aib-head { padding: 9px 14px; } .aib.dense .aib-head b { font-size: 16px; }
+.aib-cards.two { display: block; column-count: 2; column-gap: 10px; }
+.aib-cards.two .aib-card { break-inside: avoid; margin-bottom: 10px; }
+
+/* ---------- satellite country map (Mapbox static image + outline overlay) ---------- */
+.aic-map.sat { border: 1px solid #e6e9ee; background: #fff; }
+.satmap { position: relative; width: 100%; max-height: 100%; overflow: hidden; border-radius: 6px; }
+.satmap img { display: block; width: 100%; height: auto; }
+.satmap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.satmap-credit { position: absolute; right: 8px; bottom: 6px; font-size: 9px; color: #6e6e6e; }

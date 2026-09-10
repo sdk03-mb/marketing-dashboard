@@ -11,7 +11,8 @@ import { Marks as ChannelIcon } from "./ChannelPicker";
 import { KpiBestWorst, KpiTiles } from "./ReportKpi";
 import { WorldMap } from "./WorldMap";
 import { Matrix } from "./Matrix";
-import { AiDetail, AiPyramid, LEVELS } from "./AiPyramid";
+import { AiAvenueBoard, AiBoard, AiCountryCard, aiCountries } from "./AiCountry";
+import { AI_COUNTRY_NOTE } from "@/content/aiCountry";
 import { QUAD_METRICS, Quadrant } from "./Quadrant";
 import { CountryAvenueCards, CountryAvenueTable, usedAvenues } from "./AvenueCountry";
 
@@ -115,7 +116,7 @@ export function Report({ agg, period, chan, enabled: picked, redep = true }: Pro
   if (!tot) return <p className="empty nocountry">No country selected. Pick at least one country to build the report.</p>;
 
   // Every page in order. Page numbers and annex letters come from the position in this list.
-  type Sheet = { key: string; title: ReactNode; body: ReactNode; sub?: string; annex?: boolean; divider?: boolean };
+  type Sheet = { key: string; title: ReactNode; body: ReactNode; sub?: string; annex?: boolean; divider?: boolean; kicker?: string };
   const sheets: Sheet[] = [];
   const add = (x: Sheet) => sheets.push(x);
 
@@ -136,12 +137,6 @@ export function Report({ agg, period, chan, enabled: picked, redep = true }: Pro
   // One full page per unit figure against spend: the same markets, a different figure up the page.
   for (const k of ["CPFA", "CPC", "CPL", "CPA", "AvgAccountSize", "Redeposit"]) {
     add({ key: "quad-" + k, title: <>Chart of {QUAD_METRICS[k].l} vs Spend</>, body: <Quadrant groups={G.groups} period={period} height={760} metric={QUAD_METRICS[k]} /> });
-  }
-  // AI recommendations: one pyramid page, what / why / how per level (text in src/components/AiPyramid.tsx).
-  add({ key: "pyramid", sub: "All Channels", title: "AI Recommendations", body: <AiPyramid rowH={176} /> });
-  // One deep-dive page per level, read from the base up: stop, fix, hold, scale, attack.
-  for (const l of [...LEVELS].reverse()) {
-    add({ key: "ai-" + l.key, sub: "All Channels", title: <>{l.head} <small className="rtsub">{l.tag}</small></>, body: <AiDetail level={l.key} /> });
   }
 
   // Avenue and country scorecard: two pages, ten countries each as two bands of five, three columns per country.
@@ -220,6 +215,22 @@ export function Report({ agg, period, chan, enabled: picked, redep = true }: Pro
     ) });
   }
 
+  // AI recommendation per country, after the annexure: a divider, then one page per country (the country alone on a map, the written call, one box per avenue).
+  const aiList = aiCountries(agg, period);
+  add({ key: "aidiv", divider: true, kicker: "Section", title: "AI Recommendation", body: (
+    <>
+      <p className="rdiv-note">{AI_COUNTRY_NOTE}</p>
+      <ol className="rdiv-toc aic-toc">{aiList.map((c, i) => <li key={c}><b>{i + 1}</b> {c}</li>)}</ol>
+    </>
+  ) });
+  add({ key: "aiboard", sub: "All Channels", title: <>AI Recommendation <small className="rtsub">overview</small></>, body: <AiBoard countries={aiList} /> });
+  for (const ch of ["PPC / Google Search", "Instagram + Facebook"]) {
+    add({ key: "aiboard-" + ch, sub: ch.replace(" / Google Search", ""), title: <>AI Recommendation<span className="rtlogo"><ChannelIcon chan={ch} /></span></>, body: <AiAvenueBoard agg={agg} period={period} avenue={ch} /> });
+  }
+  for (const [i, c] of aiList.entries()) {
+    add({ key: "aic" + (i + 1), sub: "All Channels", title: "AI Recommendation", body: <AiCountryCard agg={agg} period={period} country={c} /> });
+  }
+
   // Annex letters: the same label for every page of a multi-page section (the "1/2" suffix tells them apart).
   const annexLetter = new Map<string, string>();
   let a = 0, last = "";
@@ -242,7 +253,7 @@ export function Report({ agg, period, chan, enabled: picked, redep = true }: Pro
           <div className="rhead"><Logo />{redep === false && <span className="rflag">First deposits only · re-deposits excluded</span>}<span className="rdate">{range}</span></div>
           {sh.divider ? (
             <div className="rdiv">
-              <div className="rdiv-k">Annexure</div>
+              <div className="rdiv-k">{sh.kicker ?? "Annexure"}</div>
               <h1 className="rtitle">{sh.title}</h1>
               {sh.body}
             </div>

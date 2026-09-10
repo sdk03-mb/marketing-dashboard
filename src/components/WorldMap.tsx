@@ -51,14 +51,14 @@ const LW = 204, LH = 34;            // label box size
 const BAND_X = LW + 22, BAND_Y = LH + 26; // map inset so the four label bands stay clear of the map
 
 /** World map (Natural Earth projection): markets filled by ROI on a colour scale, labels for the significant ones. */
-/** `focus`: label only these markets (one continent per annexure page). `fit`: world-atlas names the map zooms to; defaults to the focus markets. */
-export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: string[]; fit?: string[] }) {
+/** `focus`: label only these markets (one continent per annexure page). `fit`: world-atlas names the map zooms to; defaults to the focus markets. `only`: colour the focus markets alone, everything else grey. */
+export function WorldMap({ groups, focus, fit, only, pad = 0, labels: wantLabels = true }: { groups: GridGroup[]; focus?: string[]; fit?: string[]; only?: boolean; /** Extra margin around the fitted area, in px of the 1000-wide map: pulls the zoom back. */ pad?: number; labels?: boolean }) {
   const { paths, labels } = useMemo(() => {
     const fs = features();
     const focusSet = focus ? new Set(focus) : null;
     const fitSet = fit ? new Set(fit) : null;
     const fitTo = fitSet ? fs.filter((f) => fitSet.has(f.properties.name)) : focusSet ? fs.filter((f) => focusSet.has(BY_ATLAS[f.properties.name] ?? "")) : fs;
-    const proj = geoNaturalEarth1().fitExtent([[BAND_X, BAND_Y], [W - BAND_X, H - BAND_Y]], { type: "FeatureCollection", features: fitTo.length ? fitTo : fs });
+    const proj = geoNaturalEarth1().fitExtent([[BAND_X + pad, BAND_Y + pad], [W - BAND_X - pad, H - BAND_Y - pad]], { type: "FeatureCollection", features: fitTo.length ? fitTo : fs });
     const path = geoPath(proj);
     const byName = new Map(groups.filter((g) => !g.tot).map((g) => [g.name, g]));
     const spent = [...byName.values()].filter((g) => g.act.Spend > 0);
@@ -68,7 +68,7 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
     const paths = fs.map((f) => {
       const name = BY_ATLAS[f.properties.name];
       const g = byName.get(name ?? "");
-      const fill = g && g.act.Spend > 0 ? ramp(t(g)) : g ? "#d5dbe5" : "#eef1f5";
+      const fill = only && !(focusSet && name && focusSet.has(name)) ? "#eef1f5" : g && g.act.Spend > 0 ? ramp(t(g)) : g ? "#d5dbe5" : "#eef1f5";
       // Hover text (native SVG title): works in the app and in an exported HTML file with no script.
       const tip = g
         ? name + " · " + (g.act.Spend > 0 ? money(g.act.Spend) + " spent · " + fmt(g.act.Leads, "n") + " leads · " + fmt(g.act.FundedAccounts, "n") + " funded · ROI " + fmt(g.act.ROI, "pct") : "planned " + money(g.pl.Spend) + ", no spend")
@@ -103,6 +103,7 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
       return { key: name, name, cx, cy, side, avg: g.act.FundedAccounts > 0 ? money(g.act.CPFA) : "$0", fill: ramp(t(g)) };
     });
     const labels: L[] = [];
+    if (!wantLabels) return { paths, labels };
     const spread = (n: number, from: number, to: number, i: number) => (n <= 1 ? (from + to) / 2 : from + ((to - from) * i) / (n - 1));
     for (const side of ["t", "b", "l", "r"] as Side[]) {
       const band = raw.filter((r) => r.side === side).sort((a, b) => (side === "t" || side === "b" ? a.cx - b.cx : a.cy - b.cy));
@@ -112,7 +113,7 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
       });
     }
     return { paths, labels };
-  }, [groups, focus, fit]);
+  }, [groups, focus, fit, only, pad, wantLabels]);
 
   // Any side with no labels gets its band cropped out, so the map draws as large as the space allows.
   const has = (side: "t" | "b" | "l" | "r") => labels.some((l) => l.side === side);
@@ -149,3 +150,6 @@ export function WorldMap({ groups, focus, fit }: { groups: GridGroup[]; focus?: 
     </div>
   );
 }
+
+/** The world-atlas name for a dashboard country, for maps that draw one country on their own. */
+export const atlasName = (name: string): string | undefined => GEO[name]?.atlas;
