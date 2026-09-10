@@ -9,6 +9,10 @@ describe the same range and must not be merged:
   Sept-Social_and_PPC-SourceOfTruth.xlsx     1-9 Sept 2026,       rates only (no NMI / ROI columns)
   Aug&Sept-ExpectedNumbers.xlsx              1-26 Aug 2026 actuals with real volumes, plus the
                                              full-month Aug plan and its assumption levers
+  Lead_Distribution_Marketing_Budget_10-09-2026.xlsx
+                                             the Sept 2026 plan: budget, CPL and lead targets by
+                                             country and region. The sales-team / per-head split in
+                                             that workbook is deliberately not read.
 
 Nothing is derived. Every number is copied from a cell. Where a workbook does not state a figure
 the field is null, never 0, so "not reported" stays distinguishable from "zero".
@@ -27,6 +31,10 @@ SOT = [
     ("sep", "1-9 September 2026", "2026-09-01", "2026-09-09", "Sept-Social_and_PPC-SourceOfTruth.xlsx"),
 ]
 EXPECTED = "Aug&Sept-ExpectedNumbers.xlsx"
+BUDGET = "Lead_Distribution_Marketing_Budget_10-09-2026.xlsx"  # September plan
+# The Sept plan spells this market out; every other file and the app say KSA. Keyed as KSA
+# so it joins, with the workbook's own label retained on the row.
+ALIAS = {"Saudi Arabia": "KSA"}
 PLATFORM = {"PPC": "Google Search", "Social": "Facebook & Instagram"}
 
 
@@ -150,6 +158,68 @@ def build_expected():
     return a, expected, plan_inputs, actual_1_26, totals
 
 
+def build_september_plan():
+    """The 9 Sept 2026 Lead Distribution / Marketing Budget plan.
+
+    States budget, CPL and leads only, by region and by country. It carries none of the
+    downstream funnel that the August workbook derived from assumption levers (accounts,
+    funded, deposits, ROI), so those are simply absent here rather than computed.
+
+    The workbook's sales-team views - section 1 in full, the per-country team split in
+    section 3, and the staff / leads-per-head columns - are deliberately not read.
+    """
+    wb = openpyxl.load_workbook(DL / BUDGET, data_only=True)
+    g = list(wb["Marketing Budget"].iter_rows(values_only=True))
+
+    def hrow(label):
+        return next(i for i, r in enumerate(g) if r and r[1] == label)
+
+    def chan(r, o):
+        return {"Budget": num(r[o]), "CPL": num(r[o + 1]), "Leads": num(r[o + 2])}
+
+    # 1. by region
+    regions = []
+    for r in g[hrow("Region") + 1:]:
+        if not r[1] or str(r[1]).startswith("TOTAL"):
+            break
+        regions.append({"region": str(r[1]).split("\n")[0], "countries": r[2],
+                        "PPC": chan(r, 3), "Social": chan(r, 6),
+                        "Combined": {"Budget": num(r[9]), "Leads": num(r[10])},
+                        "shareOfPPCBudget": num(r[11]), "shareOfSocialBudget": num(r[12])})
+
+    # 2. by country. Rows under a country are its sales-team split and are skipped.
+    countries, region = {}, None
+    for r in g[hrow("Region  /  Country  /  Sales team") + 1:]:
+        if not r[1]:
+            continue
+        if str(r[1]).startswith("TOTAL"):
+            break
+        if r[2] is None:                       # region banner
+            region = str(r[1]).split("\n")[0]
+        elif r[2] == "country total":
+            name = ALIAS.get(r[1], r[1])
+            entry = {"region": region, "PPC": chan(r, 3), "Social": chan(r, 6),
+                     "Combined": {"Budget": num(r[9]), "Leads": num(r[10])}}
+            if name != r[1]:
+                entry["sourceLabel"] = r[1]
+            countries[name] = entry
+
+    tot = g[hrow("TOTAL  —  ALL REGIONS")]
+    return {
+        "label": "September 2026 plan",
+        "planBasis": g[2][1],
+        "planDated": "2026-09-09",
+        "workbookDated": "2026-09-10",
+        "source": [BUDGET],
+        "reports": "budget, CPL and leads only; this plan states no accounts, funded accounts, deposits or ROI",
+        "excluded": "the workbook's sales-team views and staff / leads-per-head columns",
+        "byRegion": regions,
+        "byCountry": countries,
+        "totals": {"PPC": chan(tot, 3), "Social": chan(tot, 6),
+                   "Combined": {"Budget": num(tot[9]), "Leads": num(tot[10])}},
+    }
+
+
 def main():
     assumptions, expected, plan_inputs, actual_1_26, plan_totals = build_expected()
     doc = {
@@ -160,8 +230,13 @@ def main():
             "The three workbooks cover three different windows and are kept apart deliberately:",
             "  actuals[aug]      = 1-31 Aug 2026, rates and spend only",
             "  actuals[sep]      = 1-9 Sept 2026, rates and spend only",
-            "  augustPlan.actual = 1-26 Aug 2026, the only source that states clicks/leads/accounts/funded",
-            "Do not compare augustPlan.actual against actuals[aug]: 26 days versus 31.",
+            "  plans.aug.actual  = 1-26 Aug 2026, the only source that states clicks/leads/accounts/funded",
+            "  plans.sep         = full-month Sept 2026 budget plan; states budget, CPL and leads only",
+            "Do not compare plans.aug.actual against actuals[aug]: 26 days versus 31.",
+            "plans.sep is a FULL-MONTH plan while actuals[sep] covers only 1-9 Sept.",
+            "plans.sep is keyed KSA where the workbook writes Saudi Arabia, so it joins with every other block; the original label is kept on that row as sourceLabel.",
+            "plans.sep adds Uruguay, which appears in no actuals file, and budgets no Greece, Norway, Sweden, Netherlands, Kazakhstan, India or Pakistan, all of which the August plan did.",
+            "The September workbook also splits budget and leads by sales team and per head. That is people data and is not carried in this file.",
             "In the plan workbook PPC = Google Search/Bing/Display/Others and SOC = Facebook & Instagram/TikTok/Social Boosting Posts, a wider grouping than the SourceOfTruth tabs.",
             "The Overview tabs are ignored; they are computed from the PPC and Social tabs and the Sept Overview disagrees with its own Social tab on the sign of Jordan's NMI.",
         ],
@@ -170,10 +245,12 @@ def main():
                 ("Aug-Social_and_PPC-SourceOfTruth (1).xlsx", "1-31 Aug 2026"),
                 ("Sept-Social_and_PPC-SourceOfTruth.xlsx", "1-9 Sept 2026"),
                 ("Aug&Sept-ExpectedNumbers.xlsx", "plan: full-month Aug 2026; actual: 1-26 Aug 2026"),
+                ("Lead_Distribution_Marketing_Budget_10-09-2026.xlsx", "plan: full-month Sept 2026"),
             ]
         ],
         "actuals": build_actuals(),
-        "augustPlan": {
+        "plans": {
+          "aug": {
             "label": "August 2026 plan vs actual",
             "planBasis": "Full-month allocated budget per country, Lead Distribution / Marketing Budget plan, 13 Aug 2026",
             "actualWindow": {"from": "2026-08-01", "to": "2026-08-26"},
@@ -183,14 +260,17 @@ def main():
             "expected": expected,
             "actual": actual_1_26,
             "totals": plan_totals,
+          },
+          "sep": build_september_plan(),
         },
     }
     OUT.write_text(json.dumps(doc, indent=1))
     n_act = sum(len(p["rows"]) for p in doc["actuals"])
     print(f"wrote {OUT}")
     print(f"  actual periods : {[p['id'] for p in doc['actuals']]}  ({n_act} country-platform rows)")
-    print(f"  plan countries : {len(plan_inputs)}   expected channels: {list(expected)}")
-    print(f"  assumptions    : {len(assumptions)} levers")
+    sep = doc["plans"]["sep"]
+    print(f"  aug plan       : {len(plan_inputs)} countries, {len(assumptions)} levers, expected channels {list(expected)}")
+    print(f"  sep plan       : {len(sep['byCountry'])} countries, {len(sep['byRegion'])} regions, budget ${sep['totals']['Combined']['Budget']:,.0f} (no people data)")
 
 
 if __name__ == "__main__":
